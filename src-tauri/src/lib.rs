@@ -1,0 +1,24 @@
+mod commands;
+
+use commands::{
+    check_claude_available, checkout_git_branch, get_current_git_branch, get_git_branches,
+    launch_claude, load_config, save_config,
+};
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
+        .invoke_handler(tauri::generate_handler![
+            check_claude_available,
+            get_git_branches,
+            get_current_git_branch,
+            checkout_git_branch,
+            launch_claude,
+            load_config,
+            save_config,
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}

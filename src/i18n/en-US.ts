@@ -1,0 +1,67 @@
+export const enUS = {
+  appTitle: "Claude Code Launcher",
+  langToggle: "中文",
+  themeLight: "Light",
+  themeDark: "Dark",
+  claudeAvailable: "Claude is ready",
+  claudeUnavailable: "Claude CLI not found",
+  claudeUnavailableHint: "Please install Claude Code and ensure the claude command is in your PATH.",
+
+  projectCard: "Project Selection",
+  addFavorite: "+ Favorite Current",
+  selectDir: "Select Folder",
+  noProjectSelected: "No project selected",
+
+  tabRecent: "Recent",
+  tabFavorite: "Favorites",
+  colFolder: "Folder",
+  colAlias: "Alias",
+  colPath: "Path",
+  noProjects: "No projects",
+
+  editAlias: "Edit alias",
+  deleteProject: "Delete",
+  unfavorite: "Unfavorite",
+  favoriteProject: "Favorite",
+
+  editAliasTitle: "Edit Project Alias",
+  aliasLabel: "Alias",
+  aliasPlaceholder: "Enter alias (optional)",
+  cancel: "Cancel",
+  save: "Save",
+
+  gitBranch: "Git Branch",
+  gitNotRepo: "Not a git repo",
+  gitNoRemote: "No branches",
+  gitSwitchSuccess: "Switched to",
+  gitSwitchFailed: "Switch failed",
+  gitCurrentBranch: "Current branch",
+  gitRefresh: "Refresh",
+
+  launchMode: "Launch Mode",
+  modeNew: "New Session",
+  modeContinue: "Continue Last Session",
+  modeResume: "Resume from History",
+
+  modelConfig: "Model Config",
+  provider: "Provider",
+  presetModel: "Preset Model",
+  customModel: "Custom Model",
+  customModelPlaceholder: "Enter custom model name",
+  noModel: "No model",
+  nonClaudeHint: "Non-Claude models require your Claude Code environment to be configured with a compatible proxy. This launcher only passes the model name.",
+
+  permissionMode: "Permission Mode",
+  bypassLabel: "Bypass permissions",
+  bypassHint: "Bypass skips some permission prompts. Only use in trusted project directories.",
+
+  commandPreview: "Command Preview",
+  copyCommand: "Copy",
+  copied: "Copied",
+
+  launchButton: "Launch Claude Code",
+  launching: "Launching...",
+  projectNotExist: "Project directory does not exist. Please select again.",
+  terminalFailed: "Failed to launch terminal. Please check your terminal setup.",
+  selectProjectFirst: "Please select a project directory first.",
+};

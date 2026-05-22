@@ -1,0 +1,66 @@
+import { useAppStore } from "../stores/appStore";
+import { t } from "../i18n";
+import { MODEL_PRESETS, PROVIDERS } from "../utils/modelPresets";
+import type { Provider } from "../types/config";
+
+export function ModelSelector() {
+  const { language, theme, provider, presetModel, customModel, setProvider, setPresetModel, setCustomModel } = useAppStore();
+  const dark = theme === "dark";
+  const presets = MODEL_PRESETS[provider];
+
+  function handleProviderChange(value: string) {
+    const p = value as Provider;
+    setProvider(p);
+    setPresetModel(MODEL_PRESETS[p]?.[0] ?? "");
+    setCustomModel("");
+  }
+
+  const rowCls = "grid grid-cols-[72px_1fr] items-center gap-2 h-[26px]";
+  const labelCls = `text-xs font-medium ${dark ? "text-zinc-300" : "text-zinc-700"}`;
+  const selectCls = `w-full h-full rounded-lg border px-2 text-xs outline-none appearance-none ${
+    dark ? "border-zinc-700 bg-zinc-950 text-zinc-200" : "border-zinc-200 bg-white text-zinc-800"
+  }`;
+  const inputCls = `w-full h-full rounded-lg border px-2 text-xs outline-none transition-colors ${
+    dark
+      ? "border-zinc-700 bg-zinc-950 text-zinc-200 placeholder:text-zinc-600 focus:border-orange-600"
+      : "border-zinc-200 bg-white text-zinc-800 placeholder:text-zinc-400 focus:border-orange-500"
+  }`;
+
+  return (
+    <div className={`rounded-xl border p-2.5 flex flex-col gap-2 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
+      <h2 className={`text-xs font-bold ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
+        {t(language, "modelConfig")}
+      </h2>
+
+      <div className={rowCls}>
+        <label className={labelCls}>{t(language, "provider")}</label>
+        <select value={provider} onChange={(e) => handleProviderChange(e.target.value)} className={selectCls}>
+          {PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
+      </div>
+
+      <div className={rowCls}>
+        <label className={labelCls}>{t(language, "presetModel")}</label>
+        <select
+          value={presetModel}
+          onChange={(e) => setPresetModel(e.target.value)}
+          disabled={presets.length === 0}
+          className={`${selectCls} ${presets.length === 0 ? "opacity-40 cursor-not-allowed" : ""}`}
+        >
+          <option value="">{t(language, "noModel")}</option>
+          {presets.map((m) => <option key={m} value={m}>{m}</option>)}
+        </select>
+      </div>
+
+      <div className={rowCls}>
+        <label className={labelCls}>{t(language, "customModel")}</label>
+        <input
+          value={customModel}
+          onChange={(e) => setCustomModel(e.target.value)}
+          placeholder={t(language, "customModelPlaceholder")}
+          className={inputCls}
+        />
+      </div>
+    </div>
+  );
+}
