@@ -4,6 +4,12 @@ import { GitBranch, RefreshCw } from "lucide-react";
 import { useAppStore } from "../stores/appStore";
 import { t } from "../i18n";
 
+interface SubdirGitInfo {
+  subdir: string;
+  current: string;
+  branches: string[];
+}
+
 export function GitBranchSelector() {
   const {
     language, theme,
@@ -13,10 +19,20 @@ export function GitBranchSelector() {
   } = useAppStore();
   const dark = theme === "dark";
   const [switchMsg, setSwitchMsg] = useState("");
+  const [subdirBranches, setSubdirBranches] = useState<SubdirGitInfo[]>([]);
+  const [subdirSelected, setSubdirSelected] = useState("");
+
+  const isParentRepo = !!(currentProjectPath && (gitBranches.length > 0 || currentGitBranch !== null));
+  const hasSubdirRepos = subdirBranches.length > 0;
+  const isRepo = isParentRepo || hasSubdirRepos;
 
   async function loadBranches(path: string) {
     if (!path) return;
     setSwitchMsg("");
+    setSubdirBranches([]);
+    setSubdirSelected("");
+
+    let parentIsRepo = false;
     try {
       const [branches, current] = await Promise.all([
         invoke<string[]>("get_git_branches", { path }),
@@ -24,9 +40,20 @@ export function GitBranchSelector() {
       ]);
       setGitBranches(branches);
       setCurrentGitBranch(current);
+      parentIsRepo = branches.length > 0 || current !== null;
     } catch {
       setGitBranches([]);
       setCurrentGitBranch(null);
+    }
+
+    if (!parentIsRepo) {
+      const subdirs = await invoke<SubdirGitInfo[]>("get_subdirs_git_branches", { path })
+        .catch(() => [] as SubdirGitInfo[]);
+      setSubdirBranches(subdirs);
+      const first = subdirs[0];
+      if (first) {
+        setSubdirSelected(`${first.subdir}/${first.current || first.branches[0]}`);
+      }
     }
   }
 
@@ -34,24 +61,54 @@ export function GitBranchSelector() {
     setGitBranches([]);
     setCurrentGitBranch(null);
     setSwitchMsg("");
+    setSubdirBranches([]);
+    setSubdirSelected("");
     if (currentProjectPath) loadBranches(currentProjectPath);
   }, [currentProjectPath]);
 
-  async function handleSwitch(branch: string) {
-    if (!currentProjectPath || branch === currentGitBranch) return;
-    setSwitchMsg("...");
-    try {
-      await invoke("checkout_git_branch", { path: currentProjectPath, branch });
-      setCurrentGitBranch(branch);
-      setSwitchMsg(`${t(language, "gitSwitchSuccess")} ${branch}`);
-      setTimeout(() => setSwitchMsg(""), 2000);
-    } catch {
-      setSwitchMsg(t(language, "gitSwitchFailed"));
-      setTimeout(() => setSwitchMsg(""), 3000);
+  async function handleSwitch(value: string) {
+    if (!currentProjectPath || !value) return;
+
+    if (isParentRepo) {
+      if (value === currentGitBranch) return;
+      setSwitchMsg("...");
+      try {
+        await invoke("checkout_git_branch", { path: currentProjectPath, branch: value });
+        setCurrentGitBranch(value);
+        setSwitchMsg(`${t(language, "gitSwitchSuccess")} ${value}`);
+        setTimeout(() => setSwitchMsg(""), 2000);
+      } catch {
+        setSwitchMsg(t(language, "gitSwitchFailed"));
+        setTimeout(() => setSwitchMsg(""), 3000);
+      }
+    } else {
+      const slashIdx = value.indexOf("/");
+      if (slashIdx === -1) return;
+      const subdir = value.substring(0, slashIdx);
+      const branch = value.substring(slashIdx + 1);
+      const info = subdirBranches.find((s) => s.subdir === subdir);
+      if (!info) return;
+      if (branch === info.current) {
+        setSubdirSelected(value);
+        return;
+      }
+      const subdirPath = `${currentProjectPath}/${subdir}`;
+      setSwitchMsg("...");
+      try {
+        await invoke("checkout_git_branch", { path: subdirPath, branch });
+        setSubdirBranches((prev) =>
+          prev.map((s) => (s.subdir === subdir ? { ...s, current: branch } : s))
+        );
+        setSubdirSelected(value);
+        setSwitchMsg(`${t(language, "gitSwitchSuccess")} ${subdir}/${branch}`);
+        setTimeout(() => setSwitchMsg(""), 2000);
+      } catch {
+        setSwitchMsg(t(language, "gitSwitchFailed"));
+        setTimeout(() => setSwitchMsg(""), 3000);
+      }
     }
   }
 
-  const isRepo = currentProjectPath && (gitBranches.length > 0 || currentGitBranch !== null);
   const allBranches =
     currentGitBranch && !gitBranches.includes(currentGitBranch)
       ? [currentGitBranch, ...gitBranches]
@@ -70,12 +127,15 @@ export function GitBranchSelector() {
   return (
     <div className={`rounded-xl border p-2.5 flex flex-col gap-2 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
       <div className="flex items-center justify-between">
-        <h2 className={`text-xs font-bold flex items-center gap-1.5 ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
+        <h2 className={`text-[13px] font-bold flex items-center gap-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
           <GitBranch size={13} className="text-brand-600" />
           {t(language, "gitBranch")}
         </h2>
         {currentProjectPath && isRepo && (
-          <button onClick={() => loadBranches(currentProjectPath)} className={dark ? "text-zinc-500 hover:text-zinc-300" : "text-zinc-400 hover:text-zinc-600"}>
+          <button
+            onClick={() => loadBranches(currentProjectPath)}
+            className={dark ? "text-zinc-500 hover:text-zinc-300" : "text-zinc-400 hover:text-zinc-600"}
+          >
             <RefreshCw size={12} />
           </button>
         )}
@@ -83,16 +143,26 @@ export function GitBranchSelector() {
 
       <select
         disabled={!isRepo}
-        value={isRepo ? (currentGitBranch ?? "") : ""}
+        value={isParentRepo ? (currentGitBranch ?? "") : subdirSelected}
         onChange={(e) => handleSwitch(e.target.value)}
         className={selectCls}
       >
         {!isRepo ? (
           <option value="">{currentProjectPath ? t(language, "gitNotRepo") : "—"}</option>
-        ) : (
+        ) : isParentRepo ? (
           allBranches.map((b) => (
             <option key={b} value={b}>{b}</option>
           ))
+        ) : (
+          <>
+            {subdirBranches.map(({ subdir, branches, current }) =>
+              branches.map((b) => (
+                <option key={`${subdir}/${b}`} value={`${subdir}/${b}`}>
+                  {subdir}/{b}{b === current ? " ★" : ""}
+                </option>
+              ))
+            )}
+          </>
         )}
       </select>
 
@@ -102,6 +172,11 @@ export function GitBranchSelector() {
       {!isRepo && currentProjectPath && (
         <p className={`text-xs leading-snug ${dark ? "text-zinc-600" : "text-zinc-400"}`}>
           {t(language, "gitNotRepoHint")}
+        </p>
+      )}
+      {!isParentRepo && hasSubdirRepos && !switchMsg && (
+        <p className={`text-xs leading-snug ${dark ? "text-zinc-600" : "text-zinc-400"}`}>
+          {t(language, "gitSubdirHint")}
         </p>
       )}
     </div>

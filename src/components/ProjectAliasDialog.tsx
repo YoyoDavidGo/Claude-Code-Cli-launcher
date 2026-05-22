@@ -31,7 +31,7 @@ export function ProjectAliasDialog({ project, onClose }: Props) {
         dark ? "border-zinc-700 bg-[#1b1d1f]" : "border-zinc-200 bg-white"
       }`}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className={`text-base font-bold ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
+          <h3 className={`text-base font-bold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
             {t(language, "editAliasTitle")}
           </h3>
           <button onClick={onClose} className={`${dark ? "text-zinc-500 hover:text-zinc-300" : "text-zinc-400 hover:text-zinc-600"}`}>

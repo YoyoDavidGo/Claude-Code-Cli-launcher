@@ -43,7 +43,7 @@ export function ProjectCard() {
     <div className={`rounded-xl border p-2.5 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-1.5">
-        <h2 className={`text-xs font-bold ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
+        <h2 className={`text-[13px] font-bold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
           {t(language, "projectCard")}
         </h2>
       </div>

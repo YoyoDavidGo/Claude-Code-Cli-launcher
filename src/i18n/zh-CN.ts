@@ -33,6 +33,7 @@ export const zhCN = {
   gitBranch: "Git 分支",
   gitNotRepo: "非 Git 仓库",
   gitNotRepoHint: "可能是当前目录的下级目录",
+  gitSubdirHint: "子目录分支，启动路径仍为当前目录",
   gitNoRemote: "无分支",
   gitSwitchSuccess: "已切换到",
   gitSwitchFailed: "切换失败",

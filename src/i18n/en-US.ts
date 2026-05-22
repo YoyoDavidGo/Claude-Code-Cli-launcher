@@ -33,6 +33,7 @@ export const enUS = {
   gitBranch: "Git Branch",
   gitNotRepo: "Not a Git repo",
   gitNotRepoHint: "The Git repo may be in a parent directory",
+  gitSubdirHint: "Subdirectory branches — launch path stays at current folder",
   gitNoRemote: "No branches",
   gitSwitchSuccess: "Switched to",
   gitSwitchFailed: "Switch failed",

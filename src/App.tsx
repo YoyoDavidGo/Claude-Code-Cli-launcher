@@ -22,9 +22,9 @@ export default function App() {
   }, []);
 
   return (
-    <div className={`flex flex-col h-screen ${dark ? "bg-[#0d0e0f] text-zinc-100" : "bg-[#f7f5f2] text-zinc-900"}`}>
+    <div className={`flex flex-col h-screen ${dark ? "bg-[#0d0e0f] text-zinc-200" : "bg-[#f7f5f2] text-zinc-900"}`}>
       <TopToolbar />
-      <div className="flex-1 overflow-y-auto pt-1 px-2.5 pb-2.5 space-y-1.5">
+      <div className="flex-1 overflow-hidden flex flex-col pt-0 px-2.5 pb-2 space-y-1">
         <ProjectCard />
         <div className="grid grid-cols-[0.78fr_0.9fr_1.32fr] gap-1.5">
           <GitBranchSelector />
@@ -37,7 +37,7 @@ export default function App() {
             <CommandPreview />
           </div>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-auto">
           <LaunchButton />
         </div>
       </div>

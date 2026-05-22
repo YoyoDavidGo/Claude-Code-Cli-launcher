@@ -16,7 +16,7 @@ export function LaunchModeSelector() {
 
   return (
     <div className={`rounded-xl border p-2.5 flex flex-col gap-2 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
-      <h2 className={`text-xs font-bold ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
+      <h2 className={`text-[13px] font-bold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
         {t(language, "launchMode")}
       </h2>
       {MODES.map((mode) => (

@@ -2,7 +2,7 @@ mod commands;
 
 use commands::{
     check_claude_available, checkout_git_branch, get_current_git_branch, get_git_branches,
-    launch_claude, load_config, save_config,
+    get_subdirs_git_branches, launch_claude, load_config, save_config,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -14,6 +14,7 @@ pub fn run() {
             check_claude_available,
             get_git_branches,
             get_current_git_branch,
+            get_subdirs_git_branches,
             checkout_git_branch,
             launch_claude,
             load_config,

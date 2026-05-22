@@ -151,6 +151,76 @@ pub fn get_current_git_branch(path: String) -> Result<Option<String>, String> {
     Ok(None)
 }
 
+#[derive(Debug, Serialize)]
+pub struct SubdirGitInfo {
+    pub subdir: String,
+    pub current: String,
+    pub branches: Vec<String>,
+}
+
+#[tauri::command]
+pub fn get_subdirs_git_branches(path: String) -> Vec<SubdirGitInfo> {
+    let entries = match std::fs::read_dir(Path::new(&path)) {
+        Ok(e) => e,
+        Err(_) => return vec![],
+    };
+
+    let mut result = vec![];
+
+    for entry in entries.flatten() {
+        let entry_path = entry.path();
+        if !entry_path.is_dir() {
+            continue;
+        }
+        let name = match entry.file_name().into_string() {
+            Ok(n) => n,
+            Err(_) => continue,
+        };
+        if name.starts_with('.') || name == "node_modules" {
+            continue;
+        }
+
+        let subdir_str = entry_path.to_string_lossy().to_string();
+
+        let branches_out = match git_command(&subdir_str)
+            .args(["branch", "--no-color"])
+            .output()
+        {
+            Ok(o) if o.status.success() => o,
+            _ => continue,
+        };
+
+        let branches: Vec<String> = String::from_utf8_lossy(&branches_out.stdout)
+            .lines()
+            .map(|l| {
+                let s = l.trim();
+                if s.starts_with("* ") { s[2..].trim().to_string() } else { s.to_string() }
+            })
+            .filter(|l| !l.is_empty() && !l.starts_with('('))
+            .collect();
+
+        if branches.is_empty() {
+            continue;
+        }
+
+        let current = git_command(&subdir_str)
+            .args(["branch", "--show-current"])
+            .output()
+            .ok()
+            .filter(|o| o.status.success())
+            .and_then(|o| {
+                let s = String::from_utf8_lossy(&o.stdout).trim().to_string();
+                if s.is_empty() { None } else { Some(s) }
+            })
+            .unwrap_or_default();
+
+        result.push(SubdirGitInfo { subdir: name, current, branches });
+    }
+
+    result.sort_by(|a, b| a.subdir.cmp(&b.subdir));
+    result
+}
+
 #[tauri::command]
 pub fn checkout_git_branch(path: String, branch: String) -> Result<String, String> {
     let output = git_command(&path)

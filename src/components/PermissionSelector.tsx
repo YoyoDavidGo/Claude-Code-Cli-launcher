@@ -7,7 +7,7 @@ export function PermissionSelector() {
 
   return (
     <div className={`rounded-xl border p-2.5 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
-      <h2 className={`text-xs font-bold mb-1.5 ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
+      <h2 className={`text-[13px] font-bold mb-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
         {t(language, "permissionMode")}
       </h2>
       <label className={`block rounded-lg border px-2.5 py-2 cursor-pointer ${
