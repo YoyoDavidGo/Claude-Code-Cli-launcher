@@ -32,8 +32,8 @@ export function ProjectCard() {
 
   const recentProjects = [...config.projects]
     .sort((a, b) => b.lastUsedAt.localeCompare(a.lastUsedAt))
-    .slice(0, 3);
-  const favoriteProjects = config.projects.filter((p) => p.isFavorite).slice(0, 3);
+    .slice(0, 20);
+  const favoriteProjects = config.projects.filter((p) => p.isFavorite);
   const shownProjects = tab === "favorite" ? favoriteProjects : recentProjects;
 
   const dividerCls = dark ? "border-zinc-800" : "border-zinc-200";
@@ -89,8 +89,8 @@ export function ProjectCard() {
 
       {/* Table */}
       <div className={`rounded-b-lg rounded-tr-lg border overflow-hidden ${dark ? "border-zinc-800" : "border-zinc-200"}`}>
-        {/* Header */}
-        <div className={`grid grid-cols-[1.2fr_0.7fr_2fr_68px] text-xs font-semibold ${
+        {/* Header — pr-[6px] 补偿滚动条宽度保持列对齐 */}
+        <div className={`grid grid-cols-[1.2fr_0.7fr_2fr_68px] text-xs font-semibold pr-[6px] ${
           dark ? "bg-zinc-900 text-zinc-400" : "bg-zinc-50 text-zinc-600"
         }`}>
           <span className={`px-3 py-1.5 border-r ${dividerCls}`}>{t(language, "colFolder")}</span>
@@ -99,32 +99,32 @@ export function ProjectCard() {
           <span />
         </div>
 
-        {/* Rows — fixed 3 visible rows, fillers when fewer */}
-        <div className="h-[87px]">
+        {/* Rows — 3 visible rows, overflow-y-scroll 滚动条始终占位保持对齐 */}
+        <div className="h-[87px] overflow-y-scroll">
           {shownProjects.map((project) => (
             <button
               key={project.id}
               onClick={() => handleRowClick(project)}
-              className={`w-full grid grid-cols-[1.2fr_0.7fr_2fr_68px] items-center text-left text-xs border-t transition-colors ${rowBorderCls} ${
+              className={`w-full grid grid-cols-[1.2fr_0.7fr_2fr_68px] h-[29px] text-left text-xs border-t transition-colors ${rowBorderCls} ${
                 currentProjectPath === project.path
                   ? dark ? "bg-brand-950/35" : "bg-brand-50"
                   : dark ? "hover:bg-zinc-900/60" : "hover:bg-zinc-50"
               }`}
             >
-              <span className={`px-3 py-1.5 font-medium truncate border-r ${dividerCls} ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
+              <span className={`px-3 h-full flex items-center font-medium truncate border-r ${dividerCls} ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
                 {project.folderName}
               </span>
-              <span className={`px-3 py-1.5 truncate border-r ${dividerCls} ${
+              <span className={`px-3 h-full flex items-center truncate border-r ${dividerCls} ${
                 project.alias
                   ? dark ? "text-zinc-300" : "text-zinc-700"
                   : dark ? "text-zinc-600" : "text-zinc-400"
               }`}>
                 {project.alias}
               </span>
-              <span className={`px-3 py-1.5 font-mono truncate ${dark ? "text-zinc-400" : "text-zinc-500"}`}>
+              <span className={`px-3 h-full flex items-center font-mono truncate ${dark ? "text-zinc-400" : "text-zinc-500"}`}>
                 {project.path}
               </span>
-              <span className="flex justify-end gap-2 pr-2" onClick={(e) => e.stopPropagation()}>
+              <span className="h-full flex justify-end items-center gap-2 pr-2" onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => toggleFavorite(project.id)} title={t(language, project.isFavorite ? "unfavorite" : "favoriteProject")}>
                   <Star size={13} className={project.isFavorite ? "fill-brand-500 text-brand-500" : dark ? "text-zinc-500" : "text-zinc-400"} />
                 </button>
@@ -142,9 +142,9 @@ export function ProjectCard() {
               key={`filler-${i}`}
               className={`grid grid-cols-[1.2fr_0.7fr_2fr_68px] border-t ${rowBorderCls}`}
             >
-              <div className={`h-[28px] border-r ${dividerCls}`} />
-              <div className={`h-[28px] border-r ${dividerCls}`} />
-              <div className="h-[28px]" />
+              <div className={`h-[29px] border-r ${dividerCls}`} />
+              <div className={`h-[29px] border-r ${dividerCls}`} />
+              <div className="h-[29px]" />
               <div />
             </div>
           ))}

@@ -60,7 +60,7 @@ export const zhCN = {
   copyCommand: "复制",
   copied: "已复制",
 
-  launchButton: "启动 Claude Code",
+  launchButton: "启动 Claude Code CLI",
   launching: "启动中...",
   projectNotExist: "项目目录不存在，请重新选择。",
   terminalFailed: "无法启动系统终端，请检查终端是否可用。",

@@ -60,7 +60,7 @@ export const enUS = {
   copyCommand: "Copy",
   copied: "Copied",
 
-  launchButton: "Launch Claude Code",
+  launchButton: "Launch Claude Code CLI",
   launching: "Launching...",
   projectNotExist: "Project directory does not exist. Please select again.",
   terminalFailed: "Failed to launch terminal. Please check your terminal setup.",
