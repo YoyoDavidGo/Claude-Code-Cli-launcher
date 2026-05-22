@@ -62,8 +62,8 @@ export function ProjectAliasDialog({ project, onClose }: Props) {
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
               className={`w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors ${
                 dark
-                  ? "border-orange-900/70 bg-zinc-950 text-zinc-100 placeholder:text-zinc-600 focus:border-orange-600"
-                  : "border-orange-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-orange-500"
+                  ? "border-brand-900/70 bg-zinc-950 text-zinc-100 placeholder:text-zinc-600 focus:border-brand-600"
+                  : "border-brand-200 bg-white text-zinc-900 placeholder:text-zinc-400 focus:border-brand-500"
               }`}
             />
           </div>
@@ -80,7 +80,7 @@ export function ProjectAliasDialog({ project, onClose }: Props) {
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-1.5 text-sm rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-500 transition-colors"
+            className="px-4 py-1.5 text-sm rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-500 transition-colors"
           >
             {t(language, "save")}
           </button>

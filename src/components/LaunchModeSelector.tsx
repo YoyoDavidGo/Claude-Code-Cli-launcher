@@ -27,7 +27,7 @@ export function LaunchModeSelector() {
             value={mode}
             checked={launchMode === mode}
             onChange={() => setLaunchMode(mode)}
-            className="accent-orange-600 h-3.5 w-3.5 shrink-0"
+            className="accent-[#c86428] h-3.5 w-3.5 shrink-0"
           />
           <span className={`text-xs ${dark ? "text-zinc-200" : "text-zinc-700"}`}>
             {labels[mode]}

@@ -71,7 +71,7 @@ export function GitBranchSelector() {
     <div className={`rounded-xl border p-2.5 flex flex-col gap-2 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
       <div className="flex items-center justify-between">
         <h2 className={`text-xs font-bold flex items-center gap-1.5 ${dark ? "text-zinc-100" : "text-zinc-900"}`}>
-          <GitBranch size={13} className="text-orange-600" />
+          <GitBranch size={13} className="text-brand-600" />
           {t(language, "gitBranch")}
         </h2>
         {currentProjectPath && isRepo && (
@@ -98,6 +98,11 @@ export function GitBranchSelector() {
 
       {switchMsg && (
         <p className={`text-xs leading-snug ${dark ? "text-zinc-500" : "text-zinc-500"}`}>{switchMsg}</p>
+      )}
+      {!isRepo && currentProjectPath && (
+        <p className={`text-xs leading-snug ${dark ? "text-zinc-600" : "text-zinc-400"}`}>
+          {t(language, "gitNotRepoHint")}
+        </p>
       )}
     </div>
   );

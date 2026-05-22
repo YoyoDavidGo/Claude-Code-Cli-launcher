@@ -3,8 +3,8 @@ export const enUS = {
   langToggle: "中文",
   themeLight: "Light",
   themeDark: "Dark",
-  claudeAvailable: "Claude is ready",
-  claudeUnavailable: "Claude CLI not found",
+  claudeAvailable: "Claude Code CLI Ready",
+  claudeUnavailable: "Claude Code CLI Not Found",
   claudeUnavailableHint: "Please install Claude Code and ensure the claude command is in your PATH.",
 
   projectCard: "Project Selection",
@@ -31,7 +31,8 @@ export const enUS = {
   save: "Save",
 
   gitBranch: "Git Branch",
-  gitNotRepo: "Not a git repo",
+  gitNotRepo: "Not a Git repo",
+  gitNotRepoHint: "The Git repo may be in a parent directory",
   gitNoRemote: "No branches",
   gitSwitchSuccess: "Switched to",
   gitSwitchFailed: "Switch failed",

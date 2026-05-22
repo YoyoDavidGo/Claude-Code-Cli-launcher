@@ -14,9 +14,9 @@
       {
         "title": "Claude Code Launcher",
         "width": 800,
-        "height": 570,
+        "height": 556,
         "minWidth": 800,
-        "minHeight": 555,
+        "minHeight": 541,
         "resizable": true,
         "center": true
       }

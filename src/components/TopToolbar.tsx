@@ -61,7 +61,7 @@ function SegBtn({
           onClick={() => onChange(opt.value)}
           className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
             value === opt.value
-              ? "bg-orange-600 text-white shadow-sm"
+              ? "bg-brand-600 text-white shadow-sm"
               : dark
                 ? "text-zinc-400 hover:text-zinc-200"
                 : "text-zinc-600 hover:text-zinc-800"

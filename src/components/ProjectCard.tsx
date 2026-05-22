@@ -32,8 +32,8 @@ export function ProjectCard() {
 
   const recentProjects = [...config.projects]
     .sort((a, b) => b.lastUsedAt.localeCompare(a.lastUsedAt))
-    .slice(0, 20);
-  const favoriteProjects = config.projects.filter((p) => p.isFavorite);
+    .slice(0, 3);
+  const favoriteProjects = config.projects.filter((p) => p.isFavorite).slice(0, 3);
   const shownProjects = tab === "favorite" ? favoriteProjects : recentProjects;
 
   const dividerCls = dark ? "border-zinc-800" : "border-zinc-200";
@@ -75,8 +75,8 @@ export function ProjectCard() {
             className={`px-3 py-1 text-xs font-semibold rounded-t-lg border-x border-t transition-colors ${
               tab === key
                 ? dark
-                  ? "border-orange-700 text-orange-400 bg-[#151718]"
-                  : "border-orange-400 text-orange-600 bg-white"
+                  ? "border-brand-700 text-brand-400 bg-[#151718]"
+                  : "border-brand-400 text-brand-600 bg-white"
                 : dark
                   ? "border-zinc-800 text-zinc-500 bg-zinc-900/50"
                   : "border-zinc-200 text-zinc-500 bg-zinc-50"
@@ -100,14 +100,14 @@ export function ProjectCard() {
         </div>
 
         {/* Rows — fixed 3 visible rows, fillers when fewer */}
-        <div className="h-[87px] overflow-y-auto">
+        <div className="h-[87px]">
           {shownProjects.map((project) => (
             <button
               key={project.id}
               onClick={() => handleRowClick(project)}
               className={`w-full grid grid-cols-[1.2fr_0.7fr_2fr_68px] items-center text-left text-xs border-t transition-colors ${rowBorderCls} ${
                 currentProjectPath === project.path
-                  ? dark ? "bg-orange-950/35" : "bg-orange-50"
+                  ? dark ? "bg-brand-950/35" : "bg-brand-50"
                   : dark ? "hover:bg-zinc-900/60" : "hover:bg-zinc-50"
               }`}
             >
@@ -126,7 +126,7 @@ export function ProjectCard() {
               </span>
               <span className="flex justify-end gap-2 pr-2" onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => toggleFavorite(project.id)} title={t(language, project.isFavorite ? "unfavorite" : "favoriteProject")}>
-                  <Star size={13} className={project.isFavorite ? "fill-orange-500 text-orange-500" : dark ? "text-zinc-500" : "text-zinc-400"} />
+                  <Star size={13} className={project.isFavorite ? "fill-brand-500 text-brand-500" : dark ? "text-zinc-500" : "text-zinc-400"} />
                 </button>
                 <button onClick={() => setEditingProject(project)} title={t(language, "editAlias")}>
                   <Pencil size={13} className={dark ? "text-zinc-500 hover:text-zinc-300" : "text-zinc-400 hover:text-zinc-600"} />

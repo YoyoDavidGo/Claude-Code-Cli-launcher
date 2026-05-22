@@ -37,7 +37,7 @@ export function CommandPreview() {
         >
           {copied
             ? <Check size={14} className="text-emerald-500" />
-            : <Copy size={14} className="text-orange-600" />}
+            : <Copy size={14} className="text-brand-600" />}
         </button>
       </div>
     </div>

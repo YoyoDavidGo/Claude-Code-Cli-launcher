@@ -35,7 +35,7 @@ export function LaunchButton() {
       <button
         onClick={handleLaunch}
         disabled={launching}
-        className="inline-flex items-center gap-2.5 rounded-xl bg-orange-600 px-8 py-2.5 text-sm font-bold text-white shadow-md shadow-orange-950/20 hover:bg-orange-500 active:bg-orange-700 transition-colors disabled:opacity-60"
+        className="inline-flex items-center gap-2.5 rounded-xl bg-brand-600 px-8 py-2.5 text-sm font-bold text-white shadow-md shadow-brand-950/20 hover:bg-brand-500 active:bg-brand-700 transition-colors disabled:opacity-60"
       >
         <Play size={15} fill="white" />
         {launching ? t(language, "launching") : t(language, "launchButton")}

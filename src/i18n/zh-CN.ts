@@ -3,8 +3,8 @@ export const zhCN = {
   langToggle: "EN",
   themeLight: "浅色",
   themeDark: "深色",
-  claudeAvailable: "Claude 已就绪",
-  claudeUnavailable: "未检测到 Claude CLI",
+  claudeAvailable: "Claude Code CLI 已就绪",
+  claudeUnavailable: "未检测到 Claude Code CLI",
   claudeUnavailableHint: "请先安装 Claude Code，并确认 claude 命令已加入 PATH。",
 
   projectCard: "项目选择",
@@ -31,7 +31,8 @@ export const zhCN = {
   save: "保存",
 
   gitBranch: "Git 分支",
-  gitNotRepo: "未初始化 git",
+  gitNotRepo: "非 Git 仓库",
+  gitNotRepoHint: "可能是当前目录的下级目录",
   gitNoRemote: "无分支",
   gitSwitchSuccess: "已切换到",
   gitSwitchFailed: "切换失败",

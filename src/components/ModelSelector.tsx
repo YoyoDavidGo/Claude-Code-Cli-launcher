@@ -22,8 +22,8 @@ export function ModelSelector() {
   }`;
   const inputCls = `w-full h-full rounded-lg border px-2 text-xs outline-none transition-colors ${
     dark
-      ? "border-zinc-700 bg-zinc-950 text-zinc-200 placeholder:text-zinc-600 focus:border-orange-600"
-      : "border-zinc-200 bg-white text-zinc-800 placeholder:text-zinc-400 focus:border-orange-500"
+      ? "border-zinc-700 bg-zinc-950 text-zinc-200 placeholder:text-zinc-600 focus:border-brand-600"
+      : "border-zinc-200 bg-white text-zinc-800 placeholder:text-zinc-400 focus:border-brand-500"
   }`;
 
   return (
