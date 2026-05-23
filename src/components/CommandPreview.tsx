@@ -19,7 +19,7 @@ export function CommandPreview() {
 
   return (
     <div className={`rounded-xl border p-2.5 h-full ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
-      <h2 className={`text-[13px] font-bold mb-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
+      <h2 className={`text-[13px] font-semibold mb-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
         {t(language, "commandPreview")}
       </h2>
       <div className="flex gap-2">

@@ -127,8 +127,8 @@ export function GitBranchSelector() {
   return (
     <div className={`rounded-xl border p-2.5 flex flex-col gap-2 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
       <div className="flex items-center justify-between">
-        <h2 className={`text-[13px] font-bold flex items-center gap-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
-          <GitBranch size={13} className="text-brand-600" />
+        <h2 className={`text-[13px] font-semibold flex items-center gap-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
+          <GitBranch size={13} className="text-brand-500" />
           {t(language, "gitBranch")}
         </h2>
         {currentProjectPath && isRepo && (
