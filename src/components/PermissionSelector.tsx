@@ -18,7 +18,7 @@ export function PermissionSelector() {
             type="checkbox"
             checked={bypass}
             onChange={(e) => setBypass(e.target.checked)}
-            className="accent-[#c86428] h-3.5 w-3.5 shrink-0"
+            className="accent-[#c86428] h-3.5 w-3.5 shrink-0 dark:[color-scheme:dark]"
           />
           <span className={`text-xs font-medium ${bypass ? "text-brand-600" : dark ? "text-zinc-300" : "text-zinc-700"}`}>
             {t(language, "bypassLabel")}

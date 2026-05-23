@@ -12,6 +12,7 @@ export function TopToolbar() {
     }`}>
       <SegBtn
         dark={dark}
+        primary
         value={startType}
         options={[
           { value: "normal", label: t(language, "startTypeNormal") },
@@ -44,29 +45,36 @@ export function TopToolbar() {
 }
 
 function SegBtn({
-  value, options, onChange, dark,
+  value, options, onChange, dark, primary = false,
 }: {
   value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
   dark: boolean;
+  primary?: boolean;
 }) {
   return (
     <div className={`inline-flex rounded-md p-0.5 ${
-      dark ? "bg-zinc-800/70" : "bg-zinc-200/70"
+      primary
+        ? dark ? "bg-zinc-800 border border-zinc-700/60" : "bg-zinc-200/80 border border-zinc-300/60"
+        : dark ? "bg-zinc-800/70" : "bg-zinc-200/70"
     }`}>
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`px-2.5 py-0.5 text-xs rounded transition-all duration-150 ${
+          className={`px-3 py-1 text-xs rounded transition-all duration-150 ${
             value === opt.value
-              ? dark
-                ? "bg-zinc-700 text-zinc-100 shadow-sm font-medium"
-                : "bg-white text-zinc-700 shadow-sm font-medium"
-              : dark
-                ? "text-zinc-500 hover:text-zinc-300"
-                : "text-zinc-500 hover:text-zinc-600"
+              ? primary
+                ? "bg-brand-600 text-white shadow-sm font-semibold"
+                : dark
+                  ? "bg-zinc-700 text-zinc-200 shadow-sm font-medium"
+                  : "bg-white text-zinc-700 shadow-sm font-medium"
+              : primary
+                ? dark ? "text-zinc-400 hover:text-zinc-200" : "text-zinc-500 hover:text-zinc-700"
+                : dark
+                  ? "text-zinc-500 hover:text-zinc-300"
+                  : "text-zinc-500 hover:text-zinc-600"
           }`}
         >
           {opt.label}

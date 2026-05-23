@@ -37,7 +37,7 @@ export default function App() {
             <CommandPreview />
           </div>
         </div>
-        <div className="flex justify-end mt-auto">
+        <div className="flex justify-end mt-1">
           <LaunchButton />
         </div>
       </div>
