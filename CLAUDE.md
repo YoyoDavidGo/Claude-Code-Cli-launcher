@@ -47,6 +47,8 @@ src-tauri/
 
 **pnpm v11** — Build scripts require explicit allowlist. Managed in `package.json` under `pnpm.onlyBuiltDependencies`, not in a workspace file.
 
+**Model auto-detection** — `read_claude_settings` (commands.rs) reads `env.ANTHROPIC_*` from `.claude/settings.json`, in order: project `settings.local.json` → project `settings.json` → global `~/.claude/settings.json`; first file containing `ANTHROPIC_BASE_URL`/`ANTHROPIC_MODEL` wins. Provider is inferred from the base URL; `[...]` suffixes are stripped from model names. Runs on every project select (no per-project cache). **Gotcha:** third-party config lives in the *global* file's `env`, which is empty whenever Claude itself is the active provider — so detection showing "Claude" during a Claude session is correct, not a bug. Rust changes need a full `pnpm tauri dev` restart (only the frontend hot-reloads).
+
 ## State & Data Flow
 
 1. On app start: `loadConfig()` invokes Rust `load_config` → populates Zustand store from `%APPDATA%\com.claudecodelauncher.app\config.json`

@@ -8,6 +8,18 @@ import type {
   ProjectItem,
   Provider,
 } from "../types/config";
+import { MODEL_PRESETS, detectProvider } from "../utils/modelPresets";
+
+export interface ClaudeSettingsInfo {
+  base_url: string | null;
+  model: string | null;
+  default_sonnet: string | null;
+  default_opus: string | null;
+  default_haiku: string | null;
+  all_models: string[];
+  gateway_models: string[];
+  source: string;
+}
 
 const DEFAULT_CONFIG: AppConfig = {
   projects: [],
@@ -41,10 +53,13 @@ interface AppState {
   // App status
   claudeAvailable: boolean;
   configLoaded: boolean;
+  gatewayModels: string[];
+  settingsModels: string[];
 
   // Actions
   loadConfig: () => Promise<void>;
   saveConfig: () => Promise<void>;
+  syncClaudeSettings: (path: string) => Promise<void>;
 
   setCurrentProjectPath: (path: string) => void;
   setLaunchMode: (mode: LaunchMode) => void;
@@ -81,6 +96,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   gitStatusMessage: "",
   claudeAvailable: false,
   configLoaded: false,
+  gatewayModels: [],
+  settingsModels: [],
 
   loadConfig: async () => {
     try {
@@ -96,6 +113,8 @@ export const useAppStore = create<AppState>((set, get) => ({
         configLoaded: true,
       });
       applyTheme(config.defaultTheme);
+      // Detect global provider/model immediately on startup
+      get().syncClaudeSettings("");
     } catch {
       set({ configLoaded: true });
     }
@@ -120,7 +139,38 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
-  setCurrentProjectPath: (path) => set({ currentProjectPath: path }),
+  syncClaudeSettings: async (path) => {
+    try {
+      const info = await invoke<ClaudeSettingsInfo>("read_claude_settings", { projectPath: path });
+      if (info.source === "none") {
+        // No provider config found — reset to default Claude
+        set({ gatewayModels: info.gateway_models, settingsModels: [], provider: "Claude", presetModel: MODEL_PRESETS["Claude"][0] ?? "", customModel: "" });
+        return;
+      }
+      const provider = detectProvider(info.base_url);
+      const model = info.model ?? "";
+      const presets = info.all_models.length > 0
+        ? info.all_models
+        : provider === "Other"
+          ? info.gateway_models
+          : (MODEL_PRESETS[provider] ?? []);
+      const isInPreset = presets.includes(model);
+      set({
+        gatewayModels: info.gateway_models,
+        settingsModels: info.all_models,
+        provider,
+        presetModel: isInPreset ? model : (presets[0] ?? ""),
+        customModel: !isInPreset && model ? model : "",
+      });
+    } catch {
+      // silent — keep existing state
+    }
+  },
+
+  setCurrentProjectPath: (path) => {
+    set({ currentProjectPath: path, settingsModels: [] });
+    get().syncClaudeSettings(path);
+  },
   setLaunchMode: (launchMode) => set({ launchMode }),
   setProvider: (provider) => set({ provider }),
   setPresetModel: (presetModel) => set({ presetModel }),

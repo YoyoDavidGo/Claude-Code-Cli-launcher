@@ -47,7 +47,7 @@ export const enUS = {
 
   modelConfig: "Model Config",
   provider: "Provider",
-  presetModel: "Preset Model",
+  presetModel: "Specify Model",
   customModel: "Custom Model",
   customModelPlaceholder: "Enter custom model name",
   noModel: "No model",

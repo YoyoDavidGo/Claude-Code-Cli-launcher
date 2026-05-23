@@ -158,6 +158,107 @@ pub struct SubdirGitInfo {
     pub branches: Vec<String>,
 }
 
+#[derive(Debug, Serialize)]
+pub struct ClaudeSettingsInfo {
+    pub base_url: Option<String>,
+    pub model: Option<String>,
+    pub default_sonnet: Option<String>,
+    pub default_opus: Option<String>,
+    pub default_haiku: Option<String>,
+    pub all_models: Vec<String>,
+    pub gateway_models: Vec<String>,
+    pub source: String,
+}
+
+fn home_dir() -> Option<std::path::PathBuf> {
+    #[cfg(target_os = "windows")]
+    { std::env::var("USERPROFILE").ok().map(std::path::PathBuf::from) }
+    #[cfg(not(target_os = "windows"))]
+    { std::env::var("HOME").ok().map(std::path::PathBuf::from) }
+}
+
+fn strip_model_suffix(name: &str) -> String {
+    if let Some(idx) = name.find('[') {
+        name[..idx].trim_end().to_string()
+    } else {
+        name.to_string()
+    }
+}
+
+// Simple text-based extraction: find "KEY": "VALUE" in file content without JSON parsing
+fn extract_env_str(text: &str, key: &str) -> Option<String> {
+    let needle = format!("\"{}\"", key);
+    let start = text.find(&needle)?;
+    let rest = text[start + needle.len()..].trim_start();
+    let rest = rest.strip_prefix(':')?.trim_start();
+    let rest = rest.strip_prefix('"')?;
+    let end = rest.find('"')?;
+    let val = &rest[..end];
+    if val.is_empty() { None } else { Some(val.to_string()) }
+}
+
+fn read_gateway_models() -> Vec<String> {
+    home_dir()
+        .map(|h| h.join(".claude").join("cache").join("gateway-models.json"))
+        .and_then(|p| std::fs::read_to_string(p).ok())
+        .and_then(|s| serde_json::from_str::<serde_json::Value>(&s).ok())
+        .and_then(|v| v.get("models").and_then(|m| m.as_array()).cloned())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|m| m.get("id").and_then(|id| id.as_str()).map(String::from))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+#[tauri::command]
+pub fn read_claude_settings(project_path: String) -> ClaudeSettingsInfo {
+    // When project_path is empty, skip project-level files and only check global.
+    let mut candidates: Vec<(std::path::PathBuf, &str)> = vec![];
+    if !project_path.is_empty() {
+        candidates.push((Path::new(&project_path).join(".claude").join("settings.local.json"), "project"));
+        candidates.push((Path::new(&project_path).join(".claude").join("settings.json"), "project"));
+    }
+    if let Some(h) = home_dir() {
+        candidates.push((h.join(".claude").join("settings.json"), "global"));
+    }
+
+    for (path, src) in &candidates {
+        if !path.exists() { continue; }
+        let Ok(text) = std::fs::read_to_string(path) else { continue };
+
+        let base_url = extract_env_str(&text, "ANTHROPIC_BASE_URL");
+        let model = extract_env_str(&text, "ANTHROPIC_MODEL").map(|s| strip_model_suffix(&s));
+        if base_url.is_none() && model.is_none() { continue; }
+
+        let default_sonnet = extract_env_str(&text, "ANTHROPIC_DEFAULT_SONNET_MODEL").map(|s| strip_model_suffix(&s));
+        let default_opus  = extract_env_str(&text, "ANTHROPIC_DEFAULT_OPUS_MODEL").map(|s| strip_model_suffix(&s));
+        let default_haiku = extract_env_str(&text, "ANTHROPIC_DEFAULT_HAIKU_MODEL").map(|s| strip_model_suffix(&s));
+        let reasoning     = extract_env_str(&text, "ANTHROPIC_REASONING_MODEL").map(|s| strip_model_suffix(&s));
+
+        let mut all_models: Vec<String> = vec![];
+        for m in [&model, &default_sonnet, &default_opus, &default_haiku, &reasoning].into_iter().flatten() {
+            if !all_models.contains(m) { all_models.push(m.clone()); }
+        }
+
+        return ClaudeSettingsInfo {
+            base_url, model,
+            default_sonnet, default_opus, default_haiku,
+            all_models,
+            gateway_models: read_gateway_models(),
+            source: src.to_string(),
+        };
+    }
+
+    ClaudeSettingsInfo {
+        base_url: None, model: None,
+        default_sonnet: None, default_opus: None, default_haiku: None,
+        all_models: vec![],
+        gateway_models: read_gateway_models(),
+        source: "none".to_string(),
+    }
+}
+
 #[tauri::command]
 pub fn get_subdirs_git_branches(path: String) -> Vec<SubdirGitInfo> {
     let entries = match std::fs::read_dir(Path::new(&path)) {
@@ -345,4 +446,95 @@ fn get_config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String>
         .app_data_dir()
         .map(|d| d.join("config.json"))
         .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE: &str = r#"{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "sk-09158887107547ce875c8857198a3e74",
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "DeepSeek-V4-pro[1M]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "DeepSeek-V4-pro[1M]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "DeepSeek-V4-flash[1M]",
+    "ANTHROPIC_MODEL": "DeepSeek-V4-pro[1M]",
+    "ANTHROPIC_REASONING_MODEL": "DeepSeek-V4-pro[1M]"
+  },
+  "model": "sonnet"
+}"#;
+
+    #[test]
+    fn extract_base_url() {
+        assert_eq!(
+            extract_env_str(SAMPLE, "ANTHROPIC_BASE_URL"),
+            Some("https://api.deepseek.com/anthropic".to_string())
+        );
+    }
+
+    #[test]
+    fn extract_model_not_confused_by_other_keys() {
+        // "ANTHROPIC_MODEL" must not match ANTHROPIC_DEFAULT_*_MODEL
+        assert_eq!(
+            extract_env_str(SAMPLE, "ANTHROPIC_MODEL"),
+            Some("DeepSeek-V4-pro[1M]".to_string())
+        );
+    }
+
+    #[test]
+    fn strips_suffix() {
+        assert_eq!(strip_model_suffix("DeepSeek-V4-pro[1M]"), "DeepSeek-V4-pro");
+    }
+
+    #[test]
+    fn read_settings_from_project_dir() {
+        let dir = std::env::temp_dir().join(format!("ccl_test_{}", std::process::id()));
+        let claude = dir.join(".claude");
+        std::fs::create_dir_all(&claude).unwrap();
+        std::fs::write(claude.join("settings.json"), SAMPLE).unwrap();
+
+        let info = read_claude_settings(dir.to_string_lossy().to_string());
+        std::fs::remove_dir_all(&dir).ok();
+
+        assert_eq!(info.source, "project");
+        assert_eq!(info.base_url.as_deref(), Some("https://api.deepseek.com/anthropic"));
+        assert_eq!(info.model.as_deref(), Some("DeepSeek-V4-pro"));
+        assert!(info.all_models.contains(&"DeepSeek-V4-pro".to_string()));
+        assert!(info.all_models.contains(&"DeepSeek-V4-flash".to_string()));
+    }
+
+    // Real-world scenario: project has its own settings.json WITHOUT provider config,
+    // DeepSeek config lives only in global ~/.claude/settings.json.
+    // Detection must fall through the project file and pick up global.
+    // Uses a faked HOME/USERPROFILE so the real global settings is never touched.
+    #[test]
+    fn falls_through_project_to_global() {
+        let base = std::env::temp_dir().join(format!("ccl_global_{}", std::process::id()));
+        let fake_home = base.join("home");
+        let project = base.join("project");
+        std::fs::create_dir_all(fake_home.join(".claude")).unwrap();
+        std::fs::create_dir_all(project.join(".claude")).unwrap();
+        // Global has DeepSeek
+        std::fs::write(fake_home.join(".claude").join("settings.json"), SAMPLE).unwrap();
+        // Project has a settings.json with NO ANTHROPIC keys (permissions only)
+        std::fs::write(
+            project.join(".claude").join("settings.json"),
+            r#"{ "permissions": { "allow": ["Bash(gh api *)"] } }"#,
+        ).unwrap();
+
+        let key = if cfg!(windows) { "USERPROFILE" } else { "HOME" };
+        let saved = std::env::var(key).ok();
+        std::env::set_var(key, &fake_home);
+        let info = read_claude_settings(project.to_string_lossy().to_string());
+        match saved {
+            Some(v) => std::env::set_var(key, v),
+            None => std::env::remove_var(key),
+        }
+        std::fs::remove_dir_all(&base).ok();
+
+        assert_eq!(info.source, "global", "should fall through project file to global");
+        assert_eq!(info.base_url.as_deref(), Some("https://api.deepseek.com/anthropic"));
+        assert_eq!(info.model.as_deref(), Some("DeepSeek-V4-pro"));
+    }
 }

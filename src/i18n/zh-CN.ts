@@ -47,7 +47,7 @@ export const zhCN = {
 
   modelConfig: "模型配置",
   provider: "供应商",
-  presetModel: "推荐模型",
+  presetModel: "指定模型",
   customModel: "自定义模型",
   customModelPlaceholder: "输入自定义模型名",
   noModel: "不指定模型",

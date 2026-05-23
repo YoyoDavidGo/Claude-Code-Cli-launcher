@@ -4,9 +4,13 @@ import { MODEL_PRESETS, PROVIDERS } from "../utils/modelPresets";
 import type { Provider } from "../types/config";
 
 export function ModelSelector() {
-  const { language, theme, provider, presetModel, customModel, setProvider, setPresetModel, setCustomModel } = useAppStore();
+  const { language, theme, provider, presetModel, customModel, gatewayModels, settingsModels, setProvider, setPresetModel, setCustomModel } = useAppStore();
   const dark = theme === "dark";
-  const presets = MODEL_PRESETS[provider];
+  const presets = settingsModels.length > 0
+    ? settingsModels
+    : provider === "Other" && gatewayModels.length > 0
+      ? gatewayModels
+      : MODEL_PRESETS[provider];
 
   function handleProviderChange(value: string) {
     const p = value as Provider;
