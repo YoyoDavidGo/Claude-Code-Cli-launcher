@@ -46,16 +46,13 @@ If you're an experienced user, think of it as a project manager for your Claude 
 
 ## Screenshots
 
-<table>
-  <tr>
-    <th align="center">☀️ Light Mode · Normal</th>
-    <th align="center">🌙 Dark Mode · Agent View</th>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshot-light.png" alt="Light mode - Chinese UI" /></td>
-    <td><img src="docs/screenshot-dark.png" alt="Dark mode - English UI, Agent View" /></td>
-  </tr>
-</table>
+**☀️ Light Mode · Normal**
+
+![Light mode](docs/screenshot-light.png)
+
+**🌙 Dark Mode · Agent View**
+
+![Dark mode](docs/screenshot-dark.png)
 
 ---
 

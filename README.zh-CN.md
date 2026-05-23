@@ -46,16 +46,13 @@
 
 ## 界面截图
 
-<table>
-  <tr>
-    <th align="center">☀️ 浅色模式 · 普通模式</th>
-    <th align="center">🌙 深色模式 · Agent View</th>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshot-light.png" alt="浅色模式 - 中文界面" /></td>
-    <td><img src="docs/screenshot-dark.png" alt="深色模式 - 英文界面 Agent View" /></td>
-  </tr>
-</table>
+**☀️ 浅色模式 · 普通模式**
+
+![浅色模式](docs/screenshot-light.png)
+
+**🌙 深色模式 · Agent View**
+
+![深色模式](docs/screenshot-dark.png)
 
 ---
 
