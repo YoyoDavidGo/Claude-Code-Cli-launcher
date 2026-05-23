@@ -61,6 +61,11 @@ export const enUS = {
   copyCommand: "Copy",
   copied: "Copied",
 
+  startTypeNormal: "Normal",
+  startTypeAgentView: "Agent View",
+  launchButtonAgentView: "Open Agent View",
+  launchModeAgentViewHint: "Continue / Resume not used in Agent View mode",
+
   launchButton: "Launch Claude Code CLI",
   launching: "Launching...",
   projectNotExist: "Project directory does not exist. Please select again.",

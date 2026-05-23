@@ -5,11 +5,11 @@ import { t } from "../i18n";
 import { buildCommandPreview } from "../utils/commandBuilder";
 
 export function CommandPreview() {
-  const { language, theme, currentProjectPath, launchMode, provider, presetModel, customModel, bypass } = useAppStore();
+  const { language, theme, currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass } = useAppStore();
   const dark = theme === "dark";
   const [copied, setCopied] = useState(false);
 
-  const command = buildCommandPreview({ projectPath: currentProjectPath, launchMode, provider, presetModel, customModel, bypass });
+  const command = buildCommandPreview({ projectPath: currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass });
 
   async function handleCopy() {
     await navigator.clipboard.writeText(command);

@@ -54,7 +54,9 @@ src-tauri/
 1. On app start: `loadConfig()` invokes Rust `load_config` → populates Zustand store from `%APPDATA%\com.claudecodelauncher.app\config.json`, then immediately calls `syncClaudeSettings("")` to detect global provider/model before any project is selected
 2. User picks a project → `setCurrentProjectPath()` → triggers git branch fetch via `get_git_branches` / `get_current_git_branch`
 3. Launch button: reads store state → `buildClaudeArgs()` → invokes Rust `launch_claude` → opens terminal with `wt`→`powershell`→`cmd` fallback
+   - **Agent View mode** (`startType === "agentView"`): command becomes `claude agents [--model x] [--permission-mode y]`; `launchMode` is ignored; button text changes to "打开 Agent View"
 4. Config auto-saves on every user preference change (language, theme, model, etc.)
+   - `startType` ("normal" | "agentView") is **session-only**, never persisted to config
 
 ## UI Conventions
 

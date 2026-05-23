@@ -5,6 +5,7 @@ import type {
   AppLanguage,
   AppTheme,
   LaunchMode,
+  StartType,
   ProjectItem,
   Provider,
 } from "../types/config";
@@ -37,6 +38,7 @@ interface AppState {
 
   // Session UI state
   currentProjectPath: string;
+  startType: StartType;
   launchMode: LaunchMode;
   provider: Provider;
   presetModel: string;
@@ -62,6 +64,7 @@ interface AppState {
   syncClaudeSettings: (path: string) => Promise<void>;
 
   setCurrentProjectPath: (path: string) => void;
+  setStartType: (type: StartType) => void;
   setLaunchMode: (mode: LaunchMode) => void;
   setProvider: (provider: Provider) => void;
   setPresetModel: (model: string) => void;
@@ -84,6 +87,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   config: DEFAULT_CONFIG,
   currentProjectPath: "",
+  startType: "normal",
   launchMode: DEFAULT_CONFIG.defaultLaunchMode,
   provider: DEFAULT_CONFIG.defaultProvider,
   presetModel: DEFAULT_CONFIG.defaultModel,
@@ -171,6 +175,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ currentProjectPath: path, settingsModels: [] });
     get().syncClaudeSettings(path);
   },
+  setStartType: (startType) => set({ startType }),
   setLaunchMode: (launchMode) => set({ launchMode }),
   setProvider: (provider) => set({ provider }),
   setPresetModel: (presetModel) => set({ presetModel }),

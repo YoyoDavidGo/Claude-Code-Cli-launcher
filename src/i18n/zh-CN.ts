@@ -61,6 +61,11 @@ export const zhCN = {
   copyCommand: "复制",
   copied: "已复制",
 
+  startTypeNormal: "普通模式",
+  startTypeAgentView: "Agent View",
+  launchButtonAgentView: "打开 Agent View",
+  launchModeAgentViewHint: "Agent View 模式下不使用 Continue / Resume",
+
   launchButton: "启动 Claude Code CLI",
   launching: "启动中...",
   projectNotExist: "项目目录不存在，请重新选择。",

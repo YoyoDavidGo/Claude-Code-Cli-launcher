@@ -3,11 +3,20 @@ import { useAppStore } from "../stores/appStore";
 import { t } from "../i18n";
 
 export function TopToolbar() {
-  const { language, theme, claudeAvailable, setLanguage, setTheme } = useAppStore();
+  const { language, theme, claudeAvailable, startType, setLanguage, setTheme, setStartType } = useAppStore();
   const dark = theme === "dark";
 
   return (
     <header className="relative flex items-center px-3 py-1 select-none shrink-0">
+      <SegBtn
+        dark={dark}
+        value={startType}
+        options={[
+          { value: "normal", label: t(language, "startTypeNormal") },
+          { value: "agentView", label: t(language, "startTypeAgentView") },
+        ]}
+        onChange={(v) => setStartType(v as "normal" | "agentView")}
+      />
       <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
         <Circle size={7} className={claudeAvailable ? "fill-emerald-500 text-emerald-500" : "fill-red-400 text-red-400"} />
         <span className={`text-[13px] font-bold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>

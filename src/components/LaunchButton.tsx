@@ -6,7 +6,7 @@ import { t } from "../i18n";
 import { buildClaudeArgs } from "../utils/commandBuilder";
 
 export function LaunchButton() {
-  const { language, theme, claudeAvailable, currentProjectPath, launchMode, provider, presetModel, customModel, bypass, addOrUpdateProject } = useAppStore();
+  const { language, theme, claudeAvailable, currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass, addOrUpdateProject } = useAppStore();
   const dark = theme === "dark";
   const [launching, setLaunching] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -24,7 +24,7 @@ export function LaunchButton() {
     setLaunching(true);
     setErrorMsg("");
     try {
-      const args = buildClaudeArgs({ projectPath: currentProjectPath, launchMode, provider, presetModel, customModel, bypass });
+      const args = buildClaudeArgs({ projectPath: currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass });
       await invoke("launch_claude", { projectPath: currentProjectPath, args });
       addOrUpdateProject(currentProjectPath);
     } catch (e: unknown) {
@@ -67,7 +67,7 @@ export function LaunchButton() {
           className="inline-flex items-center gap-2.5 rounded-xl bg-brand-600 px-8 py-2.5 text-sm font-bold text-white shadow-md shadow-brand-950/20 hover:bg-brand-500 active:bg-brand-700 transition-colors disabled:opacity-60"
         >
           <Play size={15} fill="white" />
-          {launching ? t(language, "launching") : t(language, "launchButton")}
+          {launching ? t(language, "launching") : startType === "agentView" ? t(language, "launchButtonAgentView") : t(language, "launchButton")}
         </button>
       </div>
     </>

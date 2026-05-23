@@ -9,8 +9,12 @@ export function resolveModel(options: Pick<LaunchOptions, "presetModel" | "custo
 export function buildClaudeArgs(options: LaunchOptions): string[] {
   const args: string[] = [];
 
-  if (options.launchMode === "continue") args.push("--continue");
-  if (options.launchMode === "resume") args.push("--resume");
+  if (options.startType === "agentView") {
+    args.push("agents");
+  } else {
+    if (options.launchMode === "continue") args.push("--continue");
+    if (options.launchMode === "resume") args.push("--resume");
+  }
 
   const model = resolveModel(options);
   if (model) args.push("--model", model);

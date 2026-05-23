@@ -1,5 +1,7 @@
 export type LaunchMode = "new" | "continue" | "resume";
 
+export type StartType = "normal" | "agentView";
+
 export type Provider =
   | "Claude"
   | "DeepSeek"
@@ -34,6 +36,7 @@ export interface AppConfig {
 
 export interface LaunchOptions {
   projectPath: string;
+  startType: StartType;
   launchMode: LaunchMode;
   provider: Provider;
   presetModel: string;
