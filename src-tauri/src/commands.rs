@@ -337,6 +337,26 @@ pub fn checkout_git_branch(path: String, branch: String) -> Result<String, Strin
 }
 
 #[tauri::command]
+pub fn open_in_explorer(path: String) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("explorer")
+            .arg(&path)
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| e.to_string())
+    }
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open").arg(&path).spawn().map(|_| ()).map_err(|e| e.to_string())
+    }
+    #[cfg(target_os = "linux")]
+    {
+        Command::new("xdg-open").arg(&path).spawn().map(|_| ()).map_err(|e| e.to_string())
+    }
+}
+
+#[tauri::command]
 pub fn launch_claude(project_path: String, args: Vec<String>) -> Result<(), String> {
     if !Path::new(&project_path).exists() {
         return Err(format!("directory '{}' does not exist", project_path));

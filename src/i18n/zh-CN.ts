@@ -66,6 +66,10 @@ export const zhCN = {
   projectNotExist: "项目目录不存在，请重新选择。",
   terminalFailed: "无法启动系统终端，请检查终端是否可用。",
   selectProjectFirst: "请先选择项目目录。",
+  openInExplorer: "打开文件夹",
+  claudeNotReadyTitle: "Claude Code CLI 未就绪",
+  claudeNotReadyMsg: "未检测到 Claude Code CLI，无法启动。\n请先安装 Claude Code CLI，确认 claude 命令已加入 PATH，然后重启本启动器。",
+  closeDialog: "知道了",
 };
 
 export type I18nKeys = keyof typeof zhCN;

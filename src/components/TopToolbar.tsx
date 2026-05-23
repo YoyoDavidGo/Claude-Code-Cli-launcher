@@ -48,7 +48,7 @@ function SegBtn({
   dark: boolean;
 }) {
   return (
-    <div className={`inline-flex rounded-lg p-0.5 ${
+    <div className={`inline-flex rounded-lg p-0.5 my-0.5 ${
       dark
         ? "bg-white/[0.06] border border-white/[0.08]"
         : "bg-black/[0.05] border border-black/[0.07]"
@@ -57,7 +57,7 @@ function SegBtn({
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
-          className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+          className={`px-2.5 py-0.5 text-xs font-medium rounded-md transition-all ${
             value === opt.value
               ? dark
                 ? "bg-brand-600/40 text-brand-300 shadow-sm"

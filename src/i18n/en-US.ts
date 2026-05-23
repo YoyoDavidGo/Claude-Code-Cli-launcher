@@ -66,4 +66,8 @@ export const enUS = {
   projectNotExist: "Project directory does not exist. Please select again.",
   terminalFailed: "Failed to launch terminal. Please check your terminal setup.",
   selectProjectFirst: "Please select a project directory first.",
+  openInExplorer: "Open Folder",
+  claudeNotReadyTitle: "Claude Code CLI Not Ready",
+  claudeNotReadyMsg: "Claude Code CLI was not detected. Please install Claude Code CLI, ensure the claude command is in your PATH, and restart this launcher.",
+  closeDialog: "OK",
 };

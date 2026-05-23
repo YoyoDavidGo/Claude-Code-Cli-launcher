@@ -33,7 +33,7 @@ src/                    # React + TypeScript frontend
 src-tauri/
   src/commands.rs       # All Tauri commands (the only Rust file to edit)
   src/lib.rs            # Registers commands + plugins — rarely touched
-  tauri.conf.json       # Window config: 800×640, min 800×640
+  tauri.conf.json       # Window config: 800×556, min 800×556
   capabilities/default.json  # Permission allowlist (dialog:default etc.)
 ```
 
@@ -51,7 +51,7 @@ src-tauri/
 
 ## State & Data Flow
 
-1. On app start: `loadConfig()` invokes Rust `load_config` → populates Zustand store from `%APPDATA%\com.claudecodelauncher.app\config.json`
+1. On app start: `loadConfig()` invokes Rust `load_config` → populates Zustand store from `%APPDATA%\com.claudecodelauncher.app\config.json`, then immediately calls `syncClaudeSettings("")` to detect global provider/model before any project is selected
 2. User picks a project → `setCurrentProjectPath()` → triggers git branch fetch via `get_git_branches` / `get_current_git_branch`
 3. Launch button: reads store state → `buildClaudeArgs()` → invokes Rust `launch_claude` → opens terminal with `wt`→`powershell`→`cmd` fallback
 4. Config auto-saves on every user preference change (language, theme, model, etc.)
@@ -59,7 +59,7 @@ src-tauri/
 ## UI Conventions
 
 - Primary color: `orange-600`; backgrounds: `bg-[#f7f5f2]` (light) / `bg-[#0d0e0f]` (dark)
-- Window is 800×640; all components use `text-xs`/`text-sm` and compact padding to avoid scrollbars
+- Window is 800×556 (default = min size); all components use `text-xs`/`text-sm` and compact padding to avoid scrollbars
 - Native HTML `<select>` elements preferred over component library selects
 - The `provider` flag is stored in state and included in `--model` arg resolution, but is not passed as its own CLI flag to `claude`
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { FolderOpen, Star, Pencil, Trash2 } from "lucide-react";
+import { FolderOpen, FolderInput, Star, Pencil, Trash2 } from "lucide-react";
 import { open } from "@tauri-apps/plugin-dialog";
+import { invoke } from "@tauri-apps/api/core";
 import { ProjectAliasDialog } from "./ProjectAliasDialog";
 import { useAppStore } from "../stores/appStore";
 import { t } from "../i18n";
@@ -46,6 +47,16 @@ export function ProjectCard() {
         <h2 className={`text-[13px] font-bold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
           {t(language, "projectCard")}
         </h2>
+        <button
+          onClick={() => currentProjectPath && invoke("open_in_explorer", { path: currentProjectPath })}
+          disabled={!currentProjectPath}
+          className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+            dark ? "border-zinc-700 bg-zinc-950 text-zinc-200 hover:bg-zinc-900" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
+          }`}
+        >
+          <FolderInput size={12} />
+          {t(language, "openInExplorer")}
+        </button>
       </div>
 
       {/* Path input */}
@@ -89,8 +100,8 @@ export function ProjectCard() {
 
       {/* Table */}
       <div className={`rounded-b-lg rounded-tr-lg border overflow-hidden ${dark ? "border-zinc-800" : "border-zinc-200"}`}>
-        {/* Header — pr-[6px] 补偿滚动条宽度保持列对齐 */}
-        <div className={`grid grid-cols-[1.2fr_0.7fr_2fr_68px] text-xs font-semibold pr-[6px] ${
+        {/* Header — pr-[10px] 补偿滚动条宽度保持列对齐 */}
+        <div className={`grid grid-cols-[1.2fr_0.7fr_2fr_68px] text-xs font-semibold pr-[10px] ${
           dark ? "bg-zinc-900 text-zinc-400" : "bg-zinc-50 text-zinc-600"
         }`}>
           <span className={`px-3 py-1.5 border-r ${dividerCls}`}>{t(language, "colFolder")}</span>
@@ -125,14 +136,14 @@ export function ProjectCard() {
                 {project.path}
               </span>
               <span className="h-full flex justify-end items-center gap-2 pr-2" onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => toggleFavorite(project.id)} title={t(language, project.isFavorite ? "unfavorite" : "favoriteProject")}>
-                  <Star size={13} className={project.isFavorite ? "fill-brand-500 text-brand-500" : dark ? "text-zinc-500" : "text-zinc-400"} />
+                <button onClick={() => deleteProject(project.id)} title={t(language, "deleteProject")}>
+                  <Trash2 size={13} className="text-zinc-400 hover:text-red-500" />
                 </button>
                 <button onClick={() => setEditingProject(project)} title={t(language, "editAlias")}>
                   <Pencil size={13} className={dark ? "text-zinc-500 hover:text-zinc-300" : "text-zinc-400 hover:text-zinc-600"} />
                 </button>
-                <button onClick={() => deleteProject(project.id)} title={t(language, "deleteProject")}>
-                  <Trash2 size={13} className="text-zinc-400 hover:text-red-500" />
+                <button onClick={() => toggleFavorite(project.id)} title={t(language, project.isFavorite ? "unfavorite" : "favoriteProject")}>
+                  <Star size={13} className={project.isFavorite ? "fill-brand-500 text-brand-500" : dark ? "text-zinc-500" : "text-zinc-400"} />
                 </button>
               </span>
             </button>
