@@ -1,10 +1,19 @@
+import { useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { useAppStore } from "../stores/appStore";
 import { t } from "../i18n";
 import { MODEL_PRESETS, PROVIDERS } from "../utils/modelPresets";
 import type { Provider } from "../types/config";
 
 export function ModelSelector() {
-  const { language, theme, provider, presetModel, customModel, gatewayModels, settingsModels, setProvider, setPresetModel, setCustomModel } = useAppStore();
+  const { language, theme, provider, presetModel, customModel, gatewayModels, settingsModels, currentProjectPath, syncClaudeSettings, setProvider, setPresetModel, setCustomModel } = useAppStore();
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    await syncClaudeSettings(currentProjectPath).catch(() => {});
+    setRefreshing(false);
+  }
   const dark = theme === "dark";
   const presets = settingsModels.length > 0
     ? settingsModels
@@ -32,9 +41,19 @@ export function ModelSelector() {
 
   return (
     <div className={`rounded-xl border p-2.5 flex flex-col gap-2 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
-      <h2 className={`text-[13px] font-semibold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
-        {t(language, "modelConfig")}
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className={`text-[13px] font-semibold ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
+          {t(language, "modelConfig")}
+        </h2>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          title={t(language, "refreshModel")}
+          className={`transition-colors disabled:opacity-40 ${dark ? "text-zinc-500 hover:text-zinc-300" : "text-zinc-400 hover:text-zinc-600"}`}
+        >
+          <RefreshCw size={12} className={refreshing ? "animate-spin" : ""} />
+        </button>
+      </div>
 
       <div className={rowCls}>
         <label className={labelCls}>{t(language, "provider")}</label>

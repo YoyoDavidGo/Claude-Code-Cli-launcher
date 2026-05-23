@@ -57,6 +57,7 @@ export const enUS = {
   bypassLabel: "Bypass permissions",
   bypassHint: "Bypass skips some permission prompts. Only use in trusted project directories.",
 
+  refreshModel: "Refresh config",
   commandPreview: "Command Preview",
   copyCommand: "Copy",
   copied: "Copied",

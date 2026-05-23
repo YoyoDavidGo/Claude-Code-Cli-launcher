@@ -57,6 +57,7 @@ export const zhCN = {
   bypassLabel: "Bypass permissions",
   bypassHint: "Bypass 会跳过部分权限确认，请仅在可信项目目录中使用。",
 
+  refreshModel: "重新读取配置",
   commandPreview: "命令预览",
   copyCommand: "复制",
   copied: "已复制",

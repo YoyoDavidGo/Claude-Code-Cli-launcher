@@ -22,9 +22,28 @@ pub struct ProjectItem {
     pub last_used_at: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct ProjectMemory {
+    #[serde(rename = "launchMode", skip_serializing_if = "Option::is_none", default)]
+    pub launch_mode: Option<String>,
+    #[serde(rename = "presetModel", skip_serializing_if = "Option::is_none", default)]
+    pub preset_model: Option<String>,
+    #[serde(rename = "customModel", skip_serializing_if = "Option::is_none", default)]
+    pub custom_model: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub bypass: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub branch: Option<String>,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
+    #[serde(default)]
     pub projects: Vec<ProjectItem>,
+    #[serde(rename = "projectsNormal", default)]
+    pub projects_normal: Vec<ProjectItem>,
+    #[serde(rename = "projectsAgentView", default)]
+    pub projects_agent_view: Vec<ProjectItem>,
     #[serde(rename = "defaultLaunchMode")]
     pub default_launch_mode: String,
     #[serde(rename = "defaultProvider")]
@@ -37,18 +56,32 @@ pub struct AppConfig {
     pub default_language: String,
     #[serde(rename = "defaultTheme")]
     pub default_theme: String,
+    #[serde(rename = "lastProjectNormal", default)]
+    pub last_project_normal: String,
+    #[serde(rename = "lastProjectAgentView", default)]
+    pub last_project_agent_view: String,
+    #[serde(rename = "memoryNormal", default)]
+    pub memory_normal: std::collections::HashMap<String, ProjectMemory>,
+    #[serde(rename = "memoryAgentView", default)]
+    pub memory_agent_view: std::collections::HashMap<String, ProjectMemory>,
 }
 
 impl Default for AppConfig {
     fn default() -> Self {
         AppConfig {
             projects: vec![],
+            projects_normal: vec![],
+            projects_agent_view: vec![],
             default_launch_mode: "continue".into(),
             default_provider: "Claude".into(),
             default_model: "sonnet".into(),
             default_bypass: false,
             default_language: "zh-CN".into(),
             default_theme: "light".into(),
+            last_project_normal: String::new(),
+            last_project_agent_view: String::new(),
+            memory_normal: std::collections::HashMap::new(),
+            memory_agent_view: std::collections::HashMap::new(),
         }
     }
 }

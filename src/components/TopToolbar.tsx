@@ -90,7 +90,7 @@ function ThemeToggle({ dark, theme, setTheme }: { dark: boolean; theme: string; 
       <button
         onClick={() => setTheme("light")}
         title="浅色"
-        className={`min-w-[34px] py-0.5 rounded transition-all duration-150 flex items-center justify-center ${
+        className={`min-w-[34px] py-1.5 rounded transition-all duration-150 flex items-center justify-center ${
           theme === "light"
             ? "bg-white text-zinc-600 shadow-sm"
             : "text-zinc-500 hover:text-zinc-600"
@@ -101,7 +101,7 @@ function ThemeToggle({ dark, theme, setTheme }: { dark: boolean; theme: string; 
       <button
         onClick={() => setTheme("dark")}
         title="深色"
-        className={`min-w-[34px] py-0.5 rounded transition-all duration-150 flex items-center justify-center ${
+        className={`min-w-[34px] py-1.5 rounded transition-all duration-150 flex items-center justify-center ${
           theme === "dark"
             ? "bg-zinc-700 text-zinc-200 shadow-sm"
             : "text-zinc-500 hover:text-zinc-300"

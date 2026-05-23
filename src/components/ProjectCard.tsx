@@ -9,7 +9,7 @@ import type { ProjectItem } from "../types/config";
 
 export function ProjectCard() {
   const {
-    language, theme,
+    language, theme, startType,
     currentProjectPath, config,
     setCurrentProjectPath, addOrUpdateProject,
     toggleFavorite, deleteProject,
@@ -31,10 +31,11 @@ export function ProjectCard() {
     addOrUpdateProject(project.path);
   }
 
-  const recentProjects = [...config.projects]
+  const activeProjects = startType === "normal" ? (config.projectsNormal ?? []) : (config.projectsAgentView ?? []);
+  const recentProjects = [...activeProjects]
     .sort((a, b) => b.lastUsedAt.localeCompare(a.lastUsedAt))
     .slice(0, 20);
-  const favoriteProjects = config.projects.filter((p) => p.isFavorite);
+  const favoriteProjects = activeProjects.filter((p) => p.isFavorite);
   const shownProjects = tab === "favorite" ? favoriteProjects : recentProjects;
 
   const dividerCls = dark ? "border-zinc-800" : "border-zinc-200";

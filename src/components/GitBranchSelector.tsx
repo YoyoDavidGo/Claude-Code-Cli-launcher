@@ -12,10 +12,10 @@ interface SubdirGitInfo {
 
 export function GitBranchSelector() {
   const {
-    language, theme,
-    currentProjectPath,
+    language, theme, startType,
+    currentProjectPath, config,
     gitBranches, currentGitBranch,
-    setGitBranches, setCurrentGitBranch,
+    setGitBranches, setCurrentGitBranch, saveLastBranch,
   } = useAppStore();
   const dark = theme === "dark";
   const [switchMsg, setSwitchMsg] = useState("");
@@ -26,6 +26,18 @@ export function GitBranchSelector() {
   const hasSubdirRepos = subdirBranches.length > 0;
   const isRepo = isParentRepo || hasSubdirRepos;
 
+  async function tryRestoreBranch(path: string, branches: string[], currentBranch: string | null) {
+    const memMap = startType === "normal" ? config.memoryNormal : config.memoryAgentView;
+    const saved = memMap?.[path]?.branch;
+    if (!saved || saved === currentBranch || !branches.includes(saved)) return;
+    try {
+      await invoke("checkout_git_branch", { path, branch: saved });
+      setCurrentGitBranch(saved);
+    } catch {
+      // checkout failed (e.g. uncommitted changes) — keep current branch
+    }
+  }
+
   async function loadBranches(path: string) {
     if (!path) return;
     setSwitchMsg("");
@@ -33,6 +45,8 @@ export function GitBranchSelector() {
     setSubdirSelected("");
 
     let parentIsRepo = false;
+    let loadedBranches: string[] = [];
+    let loadedCurrent: string | null = null;
     try {
       const [branches, current] = await Promise.all([
         invoke<string[]>("get_git_branches", { path }),
@@ -40,6 +54,8 @@ export function GitBranchSelector() {
       ]);
       setGitBranches(branches);
       setCurrentGitBranch(current);
+      loadedBranches = branches;
+      loadedCurrent = current;
       parentIsRepo = branches.length > 0 || current !== null;
     } catch {
       setGitBranches([]);
@@ -54,6 +70,8 @@ export function GitBranchSelector() {
       if (first) {
         setSubdirSelected(`${first.subdir}/${first.current || first.branches[0]}`);
       }
+    } else {
+      await tryRestoreBranch(path, loadedBranches, loadedCurrent);
     }
   }
 
@@ -66,6 +84,13 @@ export function GitBranchSelector() {
     if (currentProjectPath) loadBranches(currentProjectPath);
   }, [currentProjectPath]);
 
+  // When mode switches but project stays the same, restore saved branch
+  useEffect(() => {
+    if (currentProjectPath && isParentRepo) {
+      tryRestoreBranch(currentProjectPath, gitBranches, currentGitBranch);
+    }
+  }, [startType]);
+
   async function handleSwitch(value: string) {
     if (!currentProjectPath || !value) return;
 
@@ -75,6 +100,7 @@ export function GitBranchSelector() {
       try {
         await invoke("checkout_git_branch", { path: currentProjectPath, branch: value });
         setCurrentGitBranch(value);
+        saveLastBranch(currentProjectPath, value);
         setSwitchMsg(`${t(language, "gitSwitchSuccess")} ${value}`);
         setTimeout(() => setSwitchMsg(""), 2000);
       } catch {

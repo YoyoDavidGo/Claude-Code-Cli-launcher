@@ -24,14 +24,28 @@ export interface ProjectItem {
   lastUsedAt: string;
 }
 
+export interface ProjectMemory {
+  launchMode?: LaunchMode;
+  presetModel?: string;
+  customModel?: string;
+  bypass?: boolean;
+  branch?: string;
+}
+
 export interface AppConfig {
-  projects: ProjectItem[];
+  projects?: ProjectItem[];         // legacy — migration only
+  projectsNormal: ProjectItem[];
+  projectsAgentView: ProjectItem[];
   defaultLaunchMode: LaunchMode;
   defaultProvider: Provider;
   defaultModel: string;
   defaultBypass: boolean;
   defaultLanguage: AppLanguage;
   defaultTheme: AppTheme;
+  lastProjectNormal?: string;
+  lastProjectAgentView?: string;
+  memoryNormal?: Record<string, ProjectMemory>;
+  memoryAgentView?: Record<string, ProjectMemory>;
 }
 
 export interface LaunchOptions {

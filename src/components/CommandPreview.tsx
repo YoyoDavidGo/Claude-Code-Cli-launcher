@@ -23,7 +23,7 @@ export function CommandPreview() {
         {t(language, "commandPreview")}
       </h2>
       <div className="flex gap-2">
-        <div className={`flex-1 rounded-lg border px-2.5 py-1.5 font-mono text-xs break-all ${
+        <div className={`flex-1 rounded-lg border px-2.5 py-1.5 font-mono text-xs whitespace-nowrap overflow-x-auto ${
           dark ? "border-zinc-700 bg-zinc-950 text-zinc-300" : "border-zinc-200 bg-zinc-50 text-zinc-700"
         }`}>
           {command}
