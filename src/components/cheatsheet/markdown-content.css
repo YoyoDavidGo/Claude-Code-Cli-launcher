@@ -1,0 +1,113 @@
+.markdown-content {
+  color: #3f3f46;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.dark .markdown-content {
+  color: #d4d4d8;
+}
+
+.markdown-content .cheat-item + .cheat-item {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.dark .markdown-content .cheat-item + .cheat-item {
+  border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+.markdown-content h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #18181b;
+  margin: 0 0 0.25rem;
+}
+.dark .markdown-content h2 {
+  color: #fafafa;
+}
+
+.markdown-content h3 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #a1a1aa;
+  margin: 1rem 0 0.35rem;
+}
+
+.markdown-content p {
+  margin: 0.5rem 0;
+}
+
+.markdown-content blockquote {
+  margin: 0.4rem 0;
+  padding: 0.1rem 0 0.1rem 0.75rem;
+  border-left: 3px solid var(--color-brand-400);
+  color: #71717a;
+}
+.dark .markdown-content blockquote {
+  color: #a1a1aa;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+.markdown-content li {
+  margin: 0.2rem 0;
+}
+
+.markdown-content a {
+  color: var(--color-brand-600);
+  text-decoration: none;
+  cursor: pointer;
+}
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.markdown-content .cheat-inline-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #be4318;
+}
+.dark .markdown-content .cheat-inline-code {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e8b890;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  margin: 0.6rem 0;
+  font-size: 12px;
+}
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.3rem 0.6rem;
+  text-align: left;
+}
+.dark .markdown-content th,
+.dark .markdown-content td {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.markdown-content th {
+  background: rgba(0, 0, 0, 0.04);
+  font-weight: 600;
+}
+.dark .markdown-content th {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+.dark .markdown-content hr {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}

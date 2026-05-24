@@ -77,6 +77,25 @@ export const zhCN = {
   claudeNotReadyTitle: "Claude Code CLI 未就绪",
   claudeNotReadyMsg: "未检测到 Claude Code CLI，无法启动。\n请先安装 Claude Code CLI，确认 claude 命令已加入 PATH，然后重启本启动器。",
   closeDialog: "知道了",
+
+  navCheatsheet: "速查表",
+  cheatsheetSearchPlaceholder: "搜索命令 / 操作",
+  cheatsheetFilterCommand: "命令",
+  cheatsheetFilterOperation: "操作",
+  cheatsheetScopeCommon: "常用",
+  cheatsheetScopeAll: "全部",
+  cheatsheetReload: "重新加载",
+  cheatsheetRestore: "恢复默认",
+  cheatsheetSync: "同步",
+  cheatsheetCollapse: "收起目录",
+  cheatsheetExpand: "展开目录",
+  cheatsheetCopy: "复制",
+  cheatsheetCopied: "已复制",
+  cheatsheetEmpty: "没有匹配的条目",
+  cheatsheetDivider: "以下为不常用内容",
+  cheatsheetLoadError: "速查表加载失败",
+  cheatsheetRestored: "已恢复默认速查表",
+  cheatsheetReloaded: "已重新加载",
 };
 
 export type I18nKeys = keyof typeof zhCN;

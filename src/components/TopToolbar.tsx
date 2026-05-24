@@ -3,8 +3,18 @@ import { useAppStore } from "../stores/appStore";
 import { t } from "../i18n";
 
 export function TopToolbar() {
-  const { language, theme, claudeAvailable, startType, setLanguage, setTheme, setStartType } = useAppStore();
+  const { language, theme, claudeAvailable, startType, activeView, setLanguage, setTheme, setStartType, setActiveView } = useAppStore();
   const dark = theme === "dark";
+
+  const navValue = activeView === "cheatsheet" ? "cheatsheet" : startType;
+  const onNav = (v: string) => {
+    if (v === "cheatsheet") {
+      setActiveView("cheatsheet");
+    } else {
+      setStartType(v as "normal" | "agentView");
+      setActiveView("launcher");
+    }
+  };
 
   return (
     <header className={`relative flex items-center px-3 py-1.5 select-none shrink-0 border-b ${
@@ -13,12 +23,13 @@ export function TopToolbar() {
       <SegBtn
         dark={dark}
         primary
-        value={startType}
+        value={navValue}
         options={[
           { value: "normal", label: t(language, "startTypeNormal") },
           { value: "agentView", label: t(language, "startTypeAgentView") },
+          { value: "cheatsheet", label: t(language, "navCheatsheet") },
         ]}
-        onChange={(v) => setStartType(v as "normal" | "agentView")}
+        onChange={onNav}
       />
 
       <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
