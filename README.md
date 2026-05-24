@@ -54,6 +54,10 @@ If you're an experienced user, think of it as a project manager for your Claude 
 
 ![Dark mode](docs/screenshot-dark.png)
 
+**🌙 Light Mode · cheatsheet**
+
+![Light mode](docs/screenshot-cheatsheet.png)
+
 ---
 
 ## Features
