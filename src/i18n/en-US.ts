@@ -54,8 +54,9 @@ export const enUS = {
   nonClaudeHint: "Non-Claude models require your Claude Code environment to be configured with a compatible proxy. This launcher only passes the model name.",
 
   permissionMode: "Permission Mode",
-  bypassLabel: "Bypass permissions",
-  bypassHint: "Bypass skips some permission prompts. Only use in trusted project directories.",
+  permModeDefault: "Default",
+  permModeAuto: "Auto",
+  permModeBypass: "Bypass Permissions",
 
   refreshModel: "Refresh config",
   commandPreview: "Command Preview",

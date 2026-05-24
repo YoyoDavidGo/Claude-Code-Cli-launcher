@@ -19,7 +19,9 @@ export function buildClaudeArgs(options: LaunchOptions): string[] {
   const model = resolveModel(options);
   if (model) args.push("--model", model);
 
-  if (options.bypass) args.push("--permission-mode", "bypassPermissions");
+  // "default" passes no flag (uses claude's own default / settings.json)
+  if (options.permissionMode === "auto") args.push("--permission-mode", "auto");
+  if (options.permissionMode === "bypass") args.push("--permission-mode", "bypassPermissions");
 
   return args;
 }

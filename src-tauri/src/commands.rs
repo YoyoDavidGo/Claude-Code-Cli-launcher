@@ -31,9 +31,15 @@ pub struct ProjectMemory {
     #[serde(rename = "customModel", skip_serializing_if = "Option::is_none", default)]
     pub custom_model: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
-    pub bypass: Option<bool>,
+    pub bypass: Option<bool>, // legacy — migrated to permission_mode in JS on load
+    #[serde(rename = "permissionMode", skip_serializing_if = "Option::is_none", default)]
+    pub permission_mode: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub branch: Option<String>,
+}
+
+fn default_permission_mode() -> String {
+    "auto".into()
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -50,8 +56,8 @@ pub struct AppConfig {
     pub default_provider: String,
     #[serde(rename = "defaultModel")]
     pub default_model: String,
-    #[serde(rename = "defaultBypass")]
-    pub default_bypass: bool,
+    #[serde(rename = "defaultPermissionMode", default = "default_permission_mode")]
+    pub default_permission_mode: String,
     #[serde(rename = "defaultLanguage")]
     pub default_language: String,
     #[serde(rename = "defaultTheme")]
@@ -75,7 +81,7 @@ impl Default for AppConfig {
             default_launch_mode: "continue".into(),
             default_provider: "Claude".into(),
             default_model: "sonnet".into(),
-            default_bypass: false,
+            default_permission_mode: "auto".into(),
             default_language: "zh-CN".into(),
             default_theme: "light".into(),
             last_project_normal: String::new(),
@@ -499,6 +505,51 @@ fn get_config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String>
         .app_data_dir()
         .map(|d| d.join("config.json"))
         .map_err(|e| e.to_string())
+}
+
+const CHEATSHEET_ZH: &str = include_str!("../../cheatsheet/zh-CN.md");
+const CHEATSHEET_EN: &str = include_str!("../../cheatsheet/en-US.md");
+
+fn default_cheatsheet(lang: &str) -> Result<&'static str, String> {
+    match lang {
+        "zh-CN" => Ok(CHEATSHEET_ZH),
+        "en-US" => Ok(CHEATSHEET_EN),
+        _ => Err(format!("unsupported cheatsheet lang: {lang}")),
+    }
+}
+
+fn get_cheatsheet_path(app: &tauri::AppHandle, lang: &str) -> Result<std::path::PathBuf, String> {
+    default_cheatsheet(lang)?; // validates lang before using it in a path
+    app.path()
+        .app_data_dir()
+        .map(|d| d.join("cheatsheet").join(format!("{lang}.md")))
+        .map_err(|e| e.to_string())
+}
+
+fn write_cheatsheet(path: &Path, content: &str) -> Result<(), String> {
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(path, content).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn read_cheatsheet(app: tauri::AppHandle, lang: String) -> Result<String, String> {
+    let path = get_cheatsheet_path(&app, &lang)?;
+    if !path.exists() {
+        let content = default_cheatsheet(&lang)?;
+        write_cheatsheet(&path, content)?;
+        return Ok(content.to_string());
+    }
+    std::fs::read_to_string(&path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn restore_cheatsheet_default(app: tauri::AppHandle, lang: String) -> Result<String, String> {
+    let path = get_cheatsheet_path(&app, &lang)?;
+    let content = default_cheatsheet(&lang)?;
+    write_cheatsheet(&path, content)?;
+    Ok(content.to_string())
 }
 
 #[cfg(test)]

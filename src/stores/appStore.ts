@@ -5,6 +5,7 @@ import type {
   AppLanguage,
   AppTheme,
   LaunchMode,
+  PermissionMode,
   ProjectMemory,
   StartType,
   ProjectItem,
@@ -29,6 +30,41 @@ function patchMemory(config: AppConfig, startType: StartType, path: string, patc
   return { ...config, [key]: { ...map, [path]: { ...prev, ...patch } } };
 }
 
+// Mark a project as most-recently-used (or add it) and return the new list,
+// keeping favorites first and capping the non-favorite (recent) tail at 20.
+function bumpProjectList(list: ProjectItem[], path: string): ProjectItem[] {
+  const now = new Date().toISOString();
+  const folderName = path.split(/[\\/]/).pop() ?? path;
+  const existing = list.find((p) => p.path === path);
+  const projects = existing
+    ? list.map((p) => (p.path === path ? { ...p, lastUsedAt: now } : p))
+    : [{ id: crypto.randomUUID(), folderName, alias: "", path, isFavorite: false, lastUsedAt: now }, ...list];
+  const favorites = projects.filter((p) => p.isFavorite);
+  const recent = projects.filter((p) => !p.isFavorite).sort((a, b) => b.lastUsedAt.localeCompare(a.lastUsedAt)).slice(0, 20);
+  return [...favorites, ...recent].reduce<ProjectItem[]>((acc, p) => {
+    if (!acc.find((x) => x.id === p.id)) acc.push(p);
+    return acc;
+  }, []);
+}
+
+// Migrate legacy per-project `bypass` boolean to the permissionMode enum.
+// Returns the same map reference when nothing needs migrating.
+function migrateMemoryMap(map?: Record<string, ProjectMemory>): Record<string, ProjectMemory> | undefined {
+  if (!map) return map;
+  let changed = false;
+  const out: Record<string, ProjectMemory> = {};
+  for (const [path, mem] of Object.entries(map)) {
+    if (mem.permissionMode === undefined && mem.bypass !== undefined) {
+      const { bypass, ...rest } = mem;
+      out[path] = { ...rest, permissionMode: bypass ? "bypass" : "default" };
+      changed = true;
+    } else {
+      out[path] = mem;
+    }
+  }
+  return changed ? out : map;
+}
+
 export interface ClaudeSettingsInfo {
   base_url: string | null;
   model: string | null;
@@ -46,7 +82,7 @@ const DEFAULT_CONFIG: AppConfig = {
   defaultLaunchMode: "continue",
   defaultProvider: "Claude",
   defaultModel: "sonnet",
-  defaultBypass: false,
+  defaultPermissionMode: "auto",
   defaultLanguage: "zh-CN",
   defaultTheme: "light",
 };
@@ -56,13 +92,14 @@ interface AppState {
   config: AppConfig;
 
   // Session UI state
+  activeView: "launcher" | "cheatsheet";
   currentProjectPath: string;
   startType: StartType;
   launchMode: LaunchMode;
   provider: Provider;
   presetModel: string;
   customModel: string;
-  bypass: boolean;
+  permissionMode: PermissionMode;
   language: AppLanguage;
   theme: AppTheme;
 
@@ -82,13 +119,14 @@ interface AppState {
   saveConfig: () => Promise<void>;
   syncClaudeSettings: (path: string) => Promise<void>;
 
+  setActiveView: (view: "launcher" | "cheatsheet") => void;
   setCurrentProjectPath: (path: string) => void;
   setStartType: (type: StartType) => void;
   setLaunchMode: (mode: LaunchMode) => void;
   setProvider: (provider: Provider) => void;
   setPresetModel: (model: string) => void;
   setCustomModel: (model: string) => void;
-  setBypass: (bypass: boolean) => void;
+  setPermissionMode: (mode: PermissionMode) => void;
   setLanguage: (lang: AppLanguage) => void;
   setTheme: (theme: AppTheme) => void;
   setClaudeAvailable: (available: boolean) => void;
@@ -106,13 +144,14 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set, get) => ({
   config: DEFAULT_CONFIG,
+  activeView: "launcher",
   currentProjectPath: "",
   startType: "normal",
   launchMode: DEFAULT_CONFIG.defaultLaunchMode,
   provider: DEFAULT_CONFIG.defaultProvider,
   presetModel: DEFAULT_CONFIG.defaultModel,
   customModel: "",
-  bypass: DEFAULT_CONFIG.defaultBypass,
+  permissionMode: DEFAULT_CONFIG.defaultPermissionMode,
   language: DEFAULT_CONFIG.defaultLanguage,
   theme: DEFAULT_CONFIG.defaultTheme,
   gitBranches: [],
@@ -126,17 +165,25 @@ export const useAppStore = create<AppState>((set, get) => ({
   loadConfig: async () => {
     try {
       let config = await invoke<AppConfig>("load_config");
+      let dirty = false;
       if (config.projects && config.projects.length > 0 && config.projectsNormal.length === 0) {
         config = { ...config, projectsNormal: config.projects, projects: [] };
-        invoke("save_config", { config }).catch(console.error);
+        dirty = true;
       }
+      const mn = migrateMemoryMap(config.memoryNormal);
+      const ma = migrateMemoryMap(config.memoryAgentView);
+      if (mn !== config.memoryNormal || ma !== config.memoryAgentView) {
+        config = { ...config, memoryNormal: mn, memoryAgentView: ma };
+        dirty = true;
+      }
+      if (dirty) invoke("save_config", { config }).catch(console.error);
       const restoredPath = config.lastProjectNormal ?? "";
       const mem = getMemory(config, "normal", restoredPath);
       set({
         config,
         currentProjectPath: restoredPath,
         launchMode: mem?.launchMode ?? (config.defaultLaunchMode as LaunchMode),
-        bypass: mem?.bypass ?? config.defaultBypass,
+        permissionMode: mem?.permissionMode ?? config.defaultPermissionMode,
         language: config.defaultLanguage as AppLanguage,
         theme: config.defaultTheme as AppTheme,
         configLoaded: true,
@@ -209,26 +256,29 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
-  // Select a project. If it has memory, restore launchMode/bypass from it.
-  // If not, inherit from the currently-active values (the last project) and
-  // snapshot them immediately as the new project's memory (memory birth).
+  // Select a project. Does NOT reorder the recent list — selection must not
+  // bump order (only an actual launch counts as "really opened"; see
+  // addOrUpdateProject in LaunchButton). Restores launchMode/permissionMode
+  // from memory, or inherits the current values and snapshots them as the new
+  // project's memory (memory birth).
   setCurrentProjectPath: (path) => {
     const s = get();
     const mem = getMemory(s.config, s.startType, path);
     const launchMode = mem?.launchMode ?? s.launchMode;
-    const bypass = mem?.bypass ?? s.bypass;
+    const permissionMode = mem?.permissionMode ?? s.permissionMode;
 
     const lpKey = s.startType === "normal" ? "lastProjectNormal" : "lastProjectAgentView";
     let config = { ...s.config, [lpKey]: path };
     if (path && !mem) {
-      config = patchMemory(config, s.startType, path, { launchMode, bypass });
+      config = patchMemory(config, s.startType, path, { launchMode, permissionMode });
     }
-    set({ currentProjectPath: path, launchMode, bypass, settingsModels: [], config });
+    set({ currentProjectPath: path, launchMode, permissionMode, settingsModels: [], config });
     invoke("save_config", { config }).catch(console.error);
     get().syncClaudeSettings(path); // resolves + snapshots model
   },
+  setActiveView: (activeView) => set({ activeView }),
   setStartType: (startType) => {
-    const { config, launchMode, bypass } = get();
+    const { config, launchMode, permissionMode } = get();
     const savedPath = startType === "normal"
       ? (config.lastProjectNormal ?? "")
       : (config.lastProjectAgentView ?? "");
@@ -238,7 +288,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       currentProjectPath: savedPath,
       settingsModels: [],
       launchMode: mem?.launchMode ?? (savedPath ? launchMode : (config.defaultLaunchMode as LaunchMode)),
-      bypass: mem?.bypass ?? (savedPath ? bypass : config.defaultBypass),
+      permissionMode: mem?.permissionMode ?? (savedPath ? permissionMode : config.defaultPermissionMode),
     });
     get().syncClaudeSettings(savedPath); // resolves provider + model under new mode
   },
@@ -267,12 +317,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ customModel, config });
     if (s.currentProjectPath) invoke("save_config", { config }).catch(console.error);
   },
-  setBypass: (bypass) => {
+  setPermissionMode: (permissionMode) => {
     const s = get();
     const config = s.currentProjectPath
-      ? patchMemory(s.config, s.startType, s.currentProjectPath, { bypass })
+      ? patchMemory(s.config, s.startType, s.currentProjectPath, { permissionMode })
       : s.config;
-    set({ bypass, config });
+    set({ permissionMode, config });
     if (s.currentProjectPath) invoke("save_config", { config }).catch(console.error);
   },
   setLanguage: (language) => {
@@ -289,25 +339,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   addOrUpdateProject: (path) => {
     const { startType } = get();
     const key = startType === "normal" ? "projectsNormal" : "projectsAgentView";
-    const current = get().config[key];
-    const folderName = path.split(/[\\/]/).pop() ?? path;
-    const existing = current.find((p) => p.path === path);
-    const now = new Date().toISOString();
-
-    let projects: ProjectItem[];
-    if (existing) {
-      projects = current.map((p) => p.path === path ? { ...p, lastUsedAt: now } : p);
-    } else {
-      projects = [{ id: crypto.randomUUID(), folderName, alias: "", path, isFavorite: false, lastUsedAt: now }, ...current];
-    }
-
-    const favorites = projects.filter((p) => p.isFavorite);
-    const recent = projects.filter((p) => !p.isFavorite).sort((a, b) => b.lastUsedAt.localeCompare(a.lastUsedAt)).slice(0, 20);
-    const merged = [...favorites, ...recent].reduce<ProjectItem[]>((acc, p) => {
-      if (!acc.find((x) => x.id === p.id)) acc.push(p);
-      return acc;
-    }, []);
-
+    const merged = bumpProjectList(get().config[key] ?? [], path);
     const newConfig = { ...get().config, [key]: merged };
     set({ config: newConfig });
     invoke("save_config", { config: newConfig }).catch(console.error);
@@ -356,7 +388,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           config: cleared,
           currentProjectPath: "",
           launchMode: cleared.defaultLaunchMode as LaunchMode,
-          bypass: cleared.defaultBypass,
+          permissionMode: cleared.defaultPermissionMode,
           settingsModels: [],
         });
         invoke("save_config", { config: cleared }).catch(console.error);

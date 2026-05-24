@@ -3,7 +3,7 @@ mod commands;
 use commands::{
     check_claude_available, checkout_git_branch, get_current_git_branch, get_git_branches,
     get_subdirs_git_branches, launch_claude, load_config, open_in_explorer, read_claude_settings,
-    save_config,
+    read_cheatsheet, restore_cheatsheet_default, save_config,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -22,6 +22,8 @@ pub fn run() {
             save_config,
             read_claude_settings,
             open_in_explorer,
+            read_cheatsheet,
+            restore_cheatsheet_default,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

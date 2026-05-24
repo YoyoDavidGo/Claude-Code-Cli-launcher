@@ -11,7 +11,7 @@ export function ProjectCard() {
   const {
     language, theme, startType,
     currentProjectPath, config,
-    setCurrentProjectPath, addOrUpdateProject,
+    setCurrentProjectPath,
     toggleFavorite, deleteProject,
   } = useAppStore();
   const dark = theme === "dark";
@@ -22,13 +22,11 @@ export function ProjectCard() {
     const selected = await open({ directory: true, multiple: false });
     if (selected && typeof selected === "string") {
       setCurrentProjectPath(selected);
-      addOrUpdateProject(selected);
     }
   }
 
   function handleRowClick(project: ProjectItem) {
     setCurrentProjectPath(project.path);
-    addOrUpdateProject(project.path);
   }
 
   const activeProjects = startType === "normal" ? (config.projectsNormal ?? []) : (config.projectsAgentView ?? []);
@@ -111,8 +109,8 @@ export function ProjectCard() {
           <span />
         </div>
 
-        {/* Rows — 3 visible rows, overflow-y-scroll 滚动条始终占位保持对齐 */}
-        <div className="h-[87px] overflow-y-scroll">
+        {/* Rows — 4 visible rows, overflow-y-scroll 滚动条始终占位保持对齐 */}
+        <div className="h-[116px] overflow-y-scroll">
           {shownProjects.map((project) => (
             <button
               key={project.id}
@@ -149,7 +147,7 @@ export function ProjectCard() {
               </span>
             </button>
           ))}
-          {Array.from({ length: Math.max(0, 3 - shownProjects.length) }).map((_, i) => (
+          {Array.from({ length: Math.max(0, 4 - shownProjects.length) }).map((_, i) => (
             <div
               key={`filler-${i}`}
               className={`grid grid-cols-[1.2fr_0.7fr_2fr_68px] border-t ${rowBorderCls}`}

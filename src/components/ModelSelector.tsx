@@ -28,8 +28,8 @@ export function ModelSelector() {
     setCustomModel("");
   }
 
-  const rowCls = "grid grid-cols-[72px_1fr] items-center gap-2 h-[26px]";
-  const labelCls = `text-xs font-medium ${dark ? "text-zinc-300" : "text-zinc-700"}`;
+  const rowCls = "grid grid-cols-[90px_1fr] items-center gap-2 h-[26px]";
+  const labelCls = `text-xs font-medium truncate ${dark ? "text-zinc-300" : "text-zinc-700"}`;
   const selectCls = `w-full h-full rounded-lg border px-2 text-xs outline-none appearance-none ${
     dark ? "border-zinc-700 bg-zinc-950 text-zinc-200" : "border-zinc-200 bg-white text-zinc-800"
   }`;

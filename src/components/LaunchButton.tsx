@@ -6,7 +6,7 @@ import { t } from "../i18n";
 import { buildClaudeArgs } from "../utils/commandBuilder";
 
 export function LaunchButton() {
-  const { language, theme, claudeAvailable, currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass, addOrUpdateProject } = useAppStore();
+  const { language, theme, claudeAvailable, currentProjectPath, startType, launchMode, provider, presetModel, customModel, permissionMode, addOrUpdateProject } = useAppStore();
   const dark = theme === "dark";
   const [launching, setLaunching] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -24,7 +24,7 @@ export function LaunchButton() {
     setLaunching(true);
     setErrorMsg("");
     try {
-      const args = buildClaudeArgs({ projectPath: currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass });
+      const args = buildClaudeArgs({ projectPath: currentProjectPath, startType, launchMode, provider, presetModel, customModel, permissionMode });
       await invoke("launch_claude", { projectPath: currentProjectPath, args });
       addOrUpdateProject(currentProjectPath);
     } catch (e: unknown) {

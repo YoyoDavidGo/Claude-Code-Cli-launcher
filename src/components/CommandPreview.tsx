@@ -5,11 +5,11 @@ import { t } from "../i18n";
 import { buildCommandPreview } from "../utils/commandBuilder";
 
 export function CommandPreview() {
-  const { language, theme, currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass } = useAppStore();
+  const { language, theme, currentProjectPath, startType, launchMode, provider, presetModel, customModel, permissionMode } = useAppStore();
   const dark = theme === "dark";
   const [copied, setCopied] = useState(false);
 
-  const command = buildCommandPreview({ projectPath: currentProjectPath, startType, launchMode, provider, presetModel, customModel, bypass });
+  const command = buildCommandPreview({ projectPath: currentProjectPath, startType, launchMode, provider, presetModel, customModel, permissionMode });
 
   async function handleCopy() {
     await navigator.clipboard.writeText(command);
@@ -18,7 +18,7 @@ export function CommandPreview() {
   }
 
   return (
-    <div className={`rounded-xl border p-2.5 h-full ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
+    <div className={`rounded-xl border p-2.5 ${dark ? "border-zinc-800 bg-[#151718]" : "border-zinc-200 bg-white"}`}>
       <h2 className={`text-[13px] font-semibold mb-1.5 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
         {t(language, "commandPreview")}
       </h2>

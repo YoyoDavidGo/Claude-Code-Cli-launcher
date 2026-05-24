@@ -1,5 +1,7 @@
 export type LaunchMode = "new" | "continue" | "resume";
 
+export type PermissionMode = "default" | "auto" | "bypass";
+
 export type StartType = "normal" | "agentView";
 
 export type Provider =
@@ -28,7 +30,8 @@ export interface ProjectMemory {
   launchMode?: LaunchMode;
   presetModel?: string;
   customModel?: string;
-  bypass?: boolean;
+  bypass?: boolean;          // legacy — migrated to permissionMode on load
+  permissionMode?: PermissionMode;
   branch?: string;
 }
 
@@ -39,13 +42,37 @@ export interface AppConfig {
   defaultLaunchMode: LaunchMode;
   defaultProvider: Provider;
   defaultModel: string;
-  defaultBypass: boolean;
+  defaultPermissionMode: PermissionMode;
   defaultLanguage: AppLanguage;
   defaultTheme: AppTheme;
   lastProjectNormal?: string;
   lastProjectAgentView?: string;
   memoryNormal?: Record<string, ProjectMemory>;
   memoryAgentView?: Record<string, ProjectMemory>;
+}
+
+export type CheatsheetItemType = "command" | "operation";
+
+export interface CheatsheetItem {
+  id: string;
+  title: string;
+  shortNote: string;
+  type: CheatsheetItemType;
+  isCommon: boolean;
+  markdown: string;
+}
+
+export interface CheatsheetMeta {
+  schema: number;
+  lang: AppLanguage;
+  version?: string;
+  updatedAt?: string;
+  source?: string;
+}
+
+export interface CheatsheetDoc {
+  meta: CheatsheetMeta | null;
+  items: CheatsheetItem[];
 }
 
 export interface LaunchOptions {
@@ -55,5 +82,5 @@ export interface LaunchOptions {
   provider: Provider;
   presetModel: string;
   customModel: string;
-  bypass: boolean;
+  permissionMode: PermissionMode;
 }

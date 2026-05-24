@@ -33,7 +33,7 @@ src/                    # React + TypeScript frontend
 src-tauri/
   src/commands.rs       # All Tauri commands (the only Rust file to edit)
   src/lib.rs            # Registers commands + plugins — rarely touched
-  tauri.conf.json       # Window config: 800×566, min 800×566
+  tauri.conf.json       # Window config: 900×600, min 900×600
   capabilities/default.json  # Permission allowlist (dialog:default etc.)
 ```
 
@@ -51,23 +51,29 @@ Domain language lives in `CONTEXT.md` (glossary); non-obvious decisions in `docs
 
 **Model auto-detection** — `read_claude_settings` (commands.rs) reads `env.ANTHROPIC_*` from `.claude/settings.json`, in order: project `settings.local.json` → project `settings.json` → global `~/.claude/settings.json`; first file containing `ANTHROPIC_BASE_URL`/`ANTHROPIC_MODEL` wins. Provider is inferred from the base URL; `[...]` suffixes are stripped from model names. **Gotcha:** third-party config lives in the *global* file's `env`, which is empty whenever Claude itself is the active provider — so detection showing "Claude" during a Claude session is correct, not a bug. Rust changes need a full `pnpm tauri dev` restart (only the frontend hot-reloads).
 
-**Project Memory** (per `(launchType, projectPath)`) — launch mode, model (preset + custom), bypass, and git branch are remembered per project AND per launch type (Normal vs Agent View are fully independent: separate project lists `projectsNormal`/`projectsAgentView`, separate memory maps `memoryNormal`/`memoryAgentView`, separate `lastProject*`). Stored in `config.json`; legacy `projects` is migrated into `projectsNormal` on first load. See ADR 0001/0002.
+**Project Memory** (per `(launchType, projectPath)`) — launch mode, model (preset + custom), permission mode, and git branch are remembered per project AND per launch type (Normal vs Agent View are fully independent: separate project lists `projectsNormal`/`projectsAgentView`, separate memory maps `memoryNormal`/`memoryAgentView`, separate `lastProject*`). Stored in `config.json`; legacy `projects` is migrated into `projectsNormal` on first load. See ADR 0001/0002.
 - **Provider is never stored** — always re-detected from the project's `.claude/settings.json` (`syncClaudeSettings`). Only the model *within* it is remembered: `presetModel` is restored only if it's in the detected provider's list, else the provider default; `customModel` is restored verbatim.
-- A brand-new project (no memory) inherits launchMode/bypass from the currently-open project and is snapshotted at selection time, then stays independent.
+- A brand-new project (no memory) inherits launchMode/permissionMode from the currently-open project and is snapshotted at selection time, then stays independent. The global fallback default (no current project, fresh install) is permission mode `auto`.
+- **Permission mode** is a 3-value enum (`default` | `auto` | `bypass`) replacing the old boolean `bypass`. CommandBuilder maps: `default` → no flag, `auto` → `--permission-mode auto`, `bypass` → `--permission-mode bypassPermissions`. Applies to both Normal and Agent View (`claude agents` accepts `--permission-mode`). Legacy `bypass:true/false` in config.json is migrated to `"bypass"/"default"` in JS `loadConfig`.
 - Every settings change persists immediately. Deleting a project drops its memory; deleting the *current* project auto-selects the next-most-recent (loading its memory) or resets to defaults if the list is empty.
+- **Recent-list ordering**: selecting a project does NOT reorder the recent list — only an actual launch bumps it to the top. `addOrUpdateProject` (called only from LaunchButton on success) is the sole writer of `lastUsedAt` / the sole adder of newly-browsed folders. `setCurrentProjectPath` intentionally leaves the list untouched. This keeps clicking around from churning the order, and avoids the prior save-race where selection's no-bump save clobbered the bump.
 
 ## State & Data Flow
 
 1. On app start: `loadConfig()` invokes Rust `load_config` → populates Zustand store from `%APPDATA%\com.claudecodelauncher.app\config.json`, restores Normal mode's last project (`lastProjectNormal`) and its memory, then calls `syncClaudeSettings(restoredPath)` to detect provider/model
-2. User picks a project → `setCurrentProjectPath()` → restores/births that project's memory, then triggers git branch fetch via `get_git_branches` / `get_current_git_branch`
-3. Launch button: reads store state → `buildClaudeArgs()` → invokes Rust `launch_claude` → opens terminal with `wt`→`powershell`→`cmd` fallback
+2. User picks a project → `setCurrentProjectPath()` → restores/births that project's memory (does NOT reorder the recent list), then triggers git branch fetch via `get_git_branches` / `get_current_git_branch`
+3. Launch button: reads store state → `buildClaudeArgs()` → invokes Rust `launch_claude` → opens terminal with `wt`→`powershell`→`cmd` fallback; on success `addOrUpdateProject` adds/bumps the project to the top of the recent list
    - **Agent View mode** (`startType === "agentView"`): command becomes `claude agents [--model x] [--permission-mode y]`; `launchMode` is ignored; button text changes to "打开 Agent View"
 4. `startType` (Normal | Agent View) is **session-only** (never persisted), but switching it restores that mode's last project + per-project memory. `language`/`theme` are global prefs saved via `saveConfig`; all other settings persist into Project Memory (see Key Constraints)
 
 ## UI Conventions
 
 - Primary color: `orange-600`; backgrounds: `bg-[#f7f5f2]` (light) / `bg-[#0d0e0f]` (dark)
-- Window is 800×566 (default = min size); all components use `text-xs`/`text-sm` and compact padding to avoid scrollbars
+- Window is 900×584 (default = min size); all components use `text-xs`/`text-sm` and compact padding to avoid scrollbars
+- **Layout** (`App.tsx`, top→bottom): `ProjectCard` → a 4-column card row `[GitBranchSelector | PermissionSelector | LaunchModeSelector | ModelSelector]` at grid ratio `27/20/20/33` (`grid-cols-[27fr_20fr_20fr_33fr]`) → `CommandPreview` (its own full-width row) → `LaunchButton` (bottom-right). The recent-projects table shows 4 rows (`h-[116px]`, rows `h-[29px]`).
+- **Cross-language layout stability**: card option/label rows are fixed-height (`h-[26px]`) and their text uses `whitespace-nowrap`/`truncate`, so switching zh-CN↔en-US never wraps text or changes container heights (flex `min-height:auto` would otherwise let a wrapped English label grow the row → stretch the whole grid row). ModelSelector's label column is widened to `90px` to fit English labels on one line. When adding UI, keep this invariant: longer-language text must not reflow heights.
+- `CommandPreview` is single-line: `whitespace-nowrap overflow-x-auto` + the `.no-scrollbar` utility (`index.css`) — text scrolls horizontally on mouse-selection, never wraps, no visible scrollbar, container never grows. Copy button sits inline to the right of the command.
+- `LaunchModeSelector` in Agent View hides the radios and shows a centered "not used in Agent View" hint (radios are irrelevant there); the grid keeps the card size constant.
 - Native HTML `<select>` elements preferred over component library selects
 - The `provider` flag is stored in state and included in `--model` arg resolution, but is not passed as its own CLI flag to `claude`
 

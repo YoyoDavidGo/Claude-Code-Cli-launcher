@@ -54,8 +54,9 @@ export const zhCN = {
   nonClaudeHint: "非 Claude 模型需要你的 Claude Code 当前环境已完成兼容中转配置。本启动器只负责传递模型名。",
 
   permissionMode: "权限模式",
-  bypassLabel: "Bypass permissions",
-  bypassHint: "Bypass 会跳过部分权限确认，请仅在可信项目目录中使用。",
+  permModeDefault: "默认",
+  permModeAuto: "Auto",
+  permModeBypass: "Bypass",
 
   refreshModel: "重新读取配置",
   commandPreview: "命令预览",

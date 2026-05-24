@@ -26,17 +26,13 @@ export default function App() {
       <TopToolbar />
       <div className="flex-1 overflow-hidden flex flex-col pt-0 px-2.5 pb-2 space-y-1">
         <ProjectCard />
-        <div className="grid grid-cols-[0.78fr_0.9fr_1.32fr] gap-1.5">
+        <div className="grid grid-cols-[27fr_20fr_20fr_33fr] gap-1.5">
           <GitBranchSelector />
+          <PermissionSelector />
           <LaunchModeSelector />
           <ModelSelector />
         </div>
-        <div className="grid grid-cols-[0.78fr_0.9fr_1.32fr] gap-1.5 items-stretch">
-          <PermissionSelector />
-          <div className="col-span-2">
-            <CommandPreview />
-          </div>
-        </div>
+        <CommandPreview />
         <div className="flex justify-end mt-1">
           <LaunchButton />
         </div>
