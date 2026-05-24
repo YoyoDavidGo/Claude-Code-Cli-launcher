@@ -54,6 +54,9 @@
 
 ![深色模式](docs/screenshot-dark.png)
 
+**☀️ 浅色模式 · 速查表**
+![浅色模式](docs/screenshot--cheatsheet.png)
+
 ---
 
 ## 功能一览
