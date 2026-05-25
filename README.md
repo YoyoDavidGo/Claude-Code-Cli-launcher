@@ -36,6 +36,7 @@ It's tedious for beginners and repetitive for everyone else.
 **Claude Code Launcher wraps that entire workflow in a GUI:**
 
 - **Pick your project** from a saved list — no more navigating folders in a terminal
+- **Open a terminal at your project** in one click — no right-clicking in File Explorer
 - **Toggle bypass permissions** with a switch — no more memorizing `--permission-mode bypassPermissions`
 - **Choose your conversation** visually — New / Continue / Resume, right there as a radio button
 - **See the exact command** being built in real time before you hit Launch
@@ -65,6 +66,7 @@ If you're an experienced user, think of it as a project manager for your Claude 
 | | Feature | What it replaces |
 |---|---|---|
 | 📁 | Project list with favorites & aliases | Navigating to folders manually every time |
+| 🖥 | **Open Terminal** — open a shell at the project folder | Right-click → Open in Terminal |
 | 🌿 | Git branch selector | `git checkout` before launching |
 | 💬 | New · Continue · Resume session modes | Memorizing `--continue` / `--resume` flags |
 | 🤖 | Agent View mode (`claude agents`) | Typing the agents subcommand |
@@ -114,13 +116,14 @@ pnpm tauri build
 ## Usage
 
 1. **Add a project** — click **Choose Directory** or type the path directly; it's saved for next time
-2. **Pick a branch** — the Git panel shows your current branch; switch before launching if needed
-3. **Choose session mode**
+2. **Open a terminal** (optional) — click **Open Terminal** to jump straight to the project folder in your shell
+3. **Pick a branch** — the Git panel shows your current branch; switch before launching if needed
+4. **Choose session mode**
    - `New Session` — fresh start
    - `Continue` — picks up the last conversation (`--continue`)
    - `Resume` — shows a list of past conversations to choose from (`--resume`)
-4. **Configure the model** — auto-detected from `.claude/settings.json`; override anytime
-5. **Check the preview** — the bottom bar shows the exact command; click **Copy** or just **Launch**
+5. **Configure the model** — auto-detected from `.claude/settings.json`; override anytime
+6. **Check the preview** — the bottom bar shows the exact command; click **Copy** or just **Launch**
 
 > Switch to **Agent View** from the top toolbar to open the `claude agents` dashboard instead.
 
