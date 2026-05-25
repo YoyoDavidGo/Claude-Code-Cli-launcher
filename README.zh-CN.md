@@ -8,8 +8,8 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/平台-Windows-0078D4?logo=windows" alt="platform" />
-    <img src="https://img.shields.io/badge/版本-0.1.0-orange" alt="version" />
+    <img src="https://img.shields.io/badge/平台-Windows%20%7C%20macOS%20%7C%20Linux-0078D4" alt="platform" />
+    <img src="https://img.shields.io/badge/版本-0.1.1-orange" alt="version" />
     <img src="https://img.shields.io/badge/许可证-MIT-green" alt="license" />
     <img src="https://img.shields.io/badge/Tauri-v2-24C8D8?logo=tauri" alt="tauri" />
     <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="react" />
@@ -46,16 +46,17 @@
 
 ## 界面截图
 
-**☀️ 浅色模式 · 普通模式**
+**☀️ 浅色模式 — 普通启动**
 
-![浅色模式](docs/screenshot-light.png)
+![浅色模式 - 普通启动](docs/screenshot-light-normal-zh.png)
 
-**🌙 深色模式 · Agent View**
+**🕶 浅色模式 — 速查表**
 
-![深色模式](docs/screenshot-dark.png)
+![浅色模式 - 速查表](docs/screenshot-light-cheatsheet-zh.png)
 
-**☀️ 浅色模式 · 速查表**
-![浅色模式](docs/screenshot--cheatsheet.png)
+**🌙 深色模式 — Agent View**
+
+![深色模式 - Agent View](docs/screenshot-dark-agent-zh.png)
 
 ---
 
@@ -70,6 +71,7 @@
 | 🔓 | 绕过权限一键开关 | 输入 `--permission-mode bypassPermissions` |
 | 🧠 | 自动从 `.claude/settings.json` 检测模型 | 每次手动指定 `--model` |
 | 👁 | 实时命令预览 + 一键复制 | 猜测当前生效了哪些参数 |
+| 📋 | 内置 Claude Code 速查表 | 上网搜索 CLI 参数用法 |
 | 🌐 | 多服务商支持（Claude · DeepSeek · OpenAI · Gemini · Kimi · Qwen） | 为每个服务商单独记 `--model` 参数 |
 | 🎨 | 亮色 / 暗色主题，中文 / English 界面 | — |
 
@@ -79,7 +81,7 @@
 
 | 依赖 | 说明 |
 |---|---|
-| Windows 10 / 11 | 通过 Windows Terminal 或 PowerShell 启动 Claude |
+| Windows / macOS / Linux | 全平台支持 — 基于 Tauri v2 构建 |
 | [Claude Code CLI](https://claude.ai/code) | 需已安装，可在终端直接运行 `claude` |
 | Node.js ≥ 20 + pnpm ≥ 9 | 仅从源码构建时需要 |
 | Rust (stable) | 仅从源码构建时需要 |
@@ -90,7 +92,7 @@
 
 ### 下载安装包（推荐）
 
-前往 [Releases](https://github.com/YoyoDavidGo/Claude-Code-Cli-launcher/releases) 下载最新的 `.msi` 或 `.exe` 安装包。
+前往 [Releases](https://github.com/YoyoDavidGo/Claude-Code-Cli-launcher/releases) 下载对应平台的最新安装包。
 
 ### 从源码构建
 
@@ -126,7 +128,7 @@ pnpm tauri build
 
 ## 配置文件
 
-自动保存至 `%APPDATA%\com.claudecodelauncher.app\config.json`。
+自动保存至系统应用数据目录（Windows 上为 `%APPDATA%\com.claudecodelauncher.app\config.json`）。
 
 | 字段 | 默认值 | 说明 |
 |---|---|---|

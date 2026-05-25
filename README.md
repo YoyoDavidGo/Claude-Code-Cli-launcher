@@ -8,8 +8,8 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/platform-Windows-0078D4?logo=windows" alt="platform" />
-    <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="version" />
+    <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078D4" alt="platform" />
+    <img src="https://img.shields.io/badge/version-0.1.1-orange" alt="version" />
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license" />
     <img src="https://img.shields.io/badge/Tauri-v2-24C8D8?logo=tauri" alt="tauri" />
     <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="react" />
@@ -46,17 +46,17 @@ If you're an experienced user, think of it as a project manager for your Claude 
 
 ## Screenshots
 
-**☀️ Light Mode · Normal**
+**☀️ Light Mode — Normal Launch**
 
-![Light mode](docs/screenshot-light.png)
+![Light mode - normal launch](docs/screenshot-light-normal-en.png)
 
-**🌙 Dark Mode · Agent View**
+**🕶 Light Mode — Cheatsheet**
 
-![Dark mode](docs/screenshot-dark.png)
+![Light mode - cheatsheet](docs/screenshot-light-cheatsheet-en.png)
 
-**🌙 Light Mode · cheatsheet**
+**🌙 Dark Mode — Agent View**
 
-![Light mode](docs/screenshot-cheatsheet.png)
+![Dark mode - agent view](docs/screenshot-dark-agent-en.png)
 
 ---
 
@@ -71,6 +71,7 @@ If you're an experienced user, think of it as a project manager for your Claude 
 | 🔓 | Bypass permissions toggle | Typing `--permission-mode bypassPermissions` |
 | 🧠 | Auto-detects model from `.claude/settings.json` | Manually specifying `--model` every time |
 | 👁 | Live command preview + copy | Guessing what flags were applied |
+| 📋 | Built-in Claude Code cheatsheet | Searching the web for CLI flags |
 | 🌐 | Multi-provider support (Claude · DeepSeek · OpenAI · Gemini · Kimi · Qwen) | Hard-coding `--model` per provider |
 | 🎨 | Light / Dark theme, zh-CN / English UI | — |
 
@@ -80,7 +81,7 @@ If you're an experienced user, think of it as a project manager for your Claude 
 
 | Requirement | Notes |
 |---|---|
-| Windows 10 / 11 | Launches Claude in Windows Terminal or PowerShell |
+| Windows / macOS / Linux | Cross-platform — built with Tauri v2 |
 | [Claude Code CLI](https://claude.ai/code) | Must be installed and callable as `claude` |
 | Node.js ≥ 20 + pnpm ≥ 9 | Only needed for building from source |
 | Rust (stable) | Only needed for building from source |
@@ -91,7 +92,7 @@ If you're an experienced user, think of it as a project manager for your Claude 
 
 ### Download Release (Recommended)
 
-Go to [Releases](https://github.com/YoyoDavidGo/Claude-Code-Cli-launcher/releases) and download the latest `.msi` or `.exe` installer.
+Go to [Releases](https://github.com/YoyoDavidGo/Claude-Code-Cli-launcher/releases) and download the latest installer for your platform.
 
 ### Build from Source
 
@@ -127,7 +128,7 @@ pnpm tauri build
 
 ## Configuration
 
-Auto-saved to `%APPDATA%\com.claudecodelauncher.app\config.json`.
+Auto-saved to the app data directory (platform-dependent, e.g. `%APPDATA%\com.claudecodelauncher.app\config.json` on Windows).
 
 | Field | Default | Description |
 |---|---|---|
