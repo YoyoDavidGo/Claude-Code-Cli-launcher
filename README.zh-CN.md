@@ -74,7 +74,6 @@
 | 🧠 | 自动从 `.claude/settings.json` 检测模型 | 每次手动指定 `--model` |
 | 👁 | 实时命令预览 + 一键复制 | 猜测当前生效了哪些参数 |
 | 📋 | 内置 Claude Code 速查表 | 上网搜索 CLI 参数用法 |
-| 🌐 | 多服务商支持（Claude · DeepSeek · OpenAI · Gemini · Kimi · Qwen） | 为每个服务商单独记 `--model` 参数 |
 | 🎨 | 亮色 / 暗色主题，中文 / English 界面 | — |
 
 ---
