@@ -8,11 +8,12 @@ import { ModelSelector } from "./components/ModelSelector";
 import { PermissionSelector } from "./components/PermissionSelector";
 import { CommandPreview } from "./components/CommandPreview";
 import { LaunchButton } from "./components/LaunchButton";
+import { TerminalButton } from "./components/TerminalButton";
 import { CheatsheetTab } from "./components/cheatsheet/CheatsheetTab";
 import { useAppStore } from "./stores/appStore";
 
 export default function App() {
-  const { theme, activeView, loadConfig, setClaudeAvailable } = useAppStore();
+  const { theme, activeView, startType, loadConfig, setClaudeAvailable } = useAppStore();
   const dark = theme === "dark";
 
   useEffect(() => {
@@ -37,7 +38,8 @@ export default function App() {
             <ModelSelector />
           </div>
           <CommandPreview />
-          <div className="flex justify-end mt-1">
+          <div className="flex justify-between mt-1">
+            {startType === "normal" ? <TerminalButton /> : <div />}
             <LaunchButton />
           </div>
         </div>

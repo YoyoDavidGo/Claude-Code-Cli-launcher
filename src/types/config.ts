@@ -51,6 +51,12 @@ export interface AppConfig {
   memoryAgentView?: Record<string, ProjectMemory>;
 }
 
+export interface SubdirGitInfo {
+  subdir: string;
+  current: string;
+  branches: string[];
+}
+
 export type CheatsheetItemType = "command" | "operation";
 
 export interface CheatsheetItem {

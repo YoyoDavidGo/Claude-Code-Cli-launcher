@@ -68,6 +68,7 @@ export const enUS = {
   launchButtonAgentView: "Open Agent View",
   launchModeAgentViewHint: "Continue / Resume not used in Agent View mode",
 
+  openTerminal: "Open Terminal",
   launchButton: "Launch Claude Code CLI",
   launching: "Launching...",
   projectNotExist: "Project directory does not exist. Please select again.",
@@ -84,6 +85,7 @@ export const enUS = {
   cheatsheetFilterOperation: "Actions",
   cheatsheetScopeCommon: "Common",
   cheatsheetScopeAll: "All",
+  cheatsheetUpdated: "Updated: ",
   cheatsheetReload: "Reload",
   cheatsheetRestore: "Restore default",
   cheatsheetSync: "Sync",

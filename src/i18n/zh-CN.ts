@@ -68,6 +68,7 @@ export const zhCN = {
   launchButtonAgentView: "打开 Agent View",
   launchModeAgentViewHint: "Agent View 模式下不使用 Continue / Resume",
 
+  openTerminal: "仅启动终端",
   launchButton: "启动 Claude Code CLI",
   launching: "启动中...",
   projectNotExist: "项目目录不存在，请重新选择。",
@@ -84,6 +85,7 @@ export const zhCN = {
   cheatsheetFilterOperation: "操作",
   cheatsheetScopeCommon: "常用",
   cheatsheetScopeAll: "全部",
+  cheatsheetUpdated: "更新：",
   cheatsheetReload: "重新加载",
   cheatsheetRestore: "恢复默认",
   cheatsheetSync: "同步",

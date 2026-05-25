@@ -3,24 +3,18 @@ import { invoke } from "@tauri-apps/api/core";
 import { GitBranch, RefreshCw } from "lucide-react";
 import { useAppStore } from "../stores/appStore";
 import { t } from "../i18n";
-
-interface SubdirGitInfo {
-  subdir: string;
-  current: string;
-  branches: string[];
-}
+import type { SubdirGitInfo } from "../types/config";
 
 export function GitBranchSelector() {
   const {
     language, theme, startType,
     currentProjectPath, config,
-    gitBranches, currentGitBranch,
+    gitBranches, currentGitBranch, subdirBranches, subdirSelected,
     setGitBranches, setCurrentGitBranch, saveLastBranch,
+    setSubdirBranches, setSubdirSelected,
   } = useAppStore();
   const dark = theme === "dark";
   const [switchMsg, setSwitchMsg] = useState("");
-  const [subdirBranches, setSubdirBranches] = useState<SubdirGitInfo[]>([]);
-  const [subdirSelected, setSubdirSelected] = useState("");
 
   const isParentRepo = !!(currentProjectPath && (gitBranches.length > 0 || currentGitBranch !== null));
   const hasSubdirRepos = subdirBranches.length > 0;

@@ -396,6 +396,73 @@ pub fn open_in_explorer(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn open_terminal(project_path: String) -> Result<(), String> {
+    if !Path::new(&project_path).exists() {
+        return Err(format!("directory '{}' does not exist", project_path));
+    }
+    #[cfg(target_os = "windows")]
+    return open_terminal_windows(&project_path);
+    #[cfg(target_os = "macos")]
+    return open_terminal_macos(&project_path);
+    #[cfg(target_os = "linux")]
+    return open_terminal_linux(&project_path);
+}
+
+#[cfg(target_os = "windows")]
+fn open_terminal_windows(project_path: &str) -> Result<(), String> {
+    if Command::new("wt")
+        .args(["-d", project_path])
+        .spawn()
+        .is_ok()
+    {
+        return Ok(());
+    }
+    if Command::new("powershell")
+        .args(["-NoExit", "-Command", &format!("Set-Location '{}'", project_path.replace('\'', "''"))])
+        .spawn()
+        .is_ok()
+    {
+        return Ok(());
+    }
+    Command::new("cmd")
+        .args(["/c", "start", "cmd", "/k", &format!("cd /d \"{}\"", project_path)])
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(target_os = "macos")]
+fn open_terminal_macos(project_path: &str) -> Result<(), String> {
+    let script = format!(
+        "tell application \"Terminal\" to do script \"cd '{}'\"",
+        project_path.replace('\'', "\\'")
+    );
+    Command::new("osascript")
+        .args(["-e", &script])
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(target_os = "linux")]
+fn open_terminal_linux(project_path: &str) -> Result<(), String> {
+    for term in &["x-terminal-emulator", "gnome-terminal", "konsole", "xfce4-terminal"] {
+        if Command::new(term)
+            .args(["--working-directory", project_path])
+            .spawn()
+            .is_ok()
+        {
+            return Ok(());
+        }
+    }
+    Command::new("xterm")
+        .args(["-e", &format!("cd \"{}\" && exec $SHELL", project_path)])
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 pub fn launch_claude(project_path: String, args: Vec<String>) -> Result<(), String> {
     if !Path::new(&project_path).exists() {
         return Err(format!("directory '{}' does not exist", project_path));

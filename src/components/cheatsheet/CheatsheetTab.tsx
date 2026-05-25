@@ -52,12 +52,6 @@ export function CheatsheetTab() {
     });
   };
 
-  const reload = () => {
-    loadCheatsheet(language)
-      .then((d) => (setDoc(d), setError(false)))
-      .catch(() => setError(true));
-  };
-
   const restore = () => {
     restoreCheatsheetDefault(language)
       .then((d) => (setDoc(d), setError(false)))
@@ -69,8 +63,8 @@ export function CheatsheetTab() {
       <CheatsheetToolbar
         scope={scope}
         setScope={setScope}
-        onReload={reload}
         onRestore={restore}
+        updatedAt={doc?.meta?.updatedAt ?? null}
         language={language}
       />
       <div className="flex min-h-0 flex-1">

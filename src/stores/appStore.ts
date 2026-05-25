@@ -10,6 +10,7 @@ import type {
   StartType,
   ProjectItem,
   Provider,
+  SubdirGitInfo,
 } from "../types/config";
 import { MODEL_PRESETS, detectProvider } from "../utils/modelPresets";
 
@@ -107,6 +108,8 @@ interface AppState {
   gitBranches: string[];
   currentGitBranch: string | null;
   gitStatusMessage: string;
+  subdirBranches: SubdirGitInfo[];
+  subdirSelected: string;
 
   // App status
   claudeAvailable: boolean;
@@ -140,6 +143,8 @@ interface AppState {
   setGitBranches: (branches: string[]) => void;
   setCurrentGitBranch: (branch: string | null) => void;
   setGitStatusMessage: (msg: string) => void;
+  setSubdirBranches: (v: SubdirGitInfo[] | ((prev: SubdirGitInfo[]) => SubdirGitInfo[])) => void;
+  setSubdirSelected: (v: string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -157,6 +162,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   gitBranches: [],
   currentGitBranch: null,
   gitStatusMessage: "",
+  subdirBranches: [],
+  subdirSelected: "",
   claudeAvailable: false,
   configLoaded: false,
   gatewayModels: [],
@@ -189,6 +196,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         configLoaded: true,
       });
       applyTheme(config.defaultTheme as AppTheme);
+      localStorage.setItem("theme-preference", config.defaultTheme as AppTheme);
       get().syncClaudeSettings(restoredPath); // resolves provider + model from memory
     } catch {
       set({ configLoaded: true });
@@ -332,6 +340,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setTheme: (theme) => {
     applyTheme(theme);
     set({ theme });
+    localStorage.setItem("theme-preference", theme);
     get().saveConfig();
   },
   setClaudeAvailable: (claudeAvailable) => set({ claudeAvailable }),
@@ -409,6 +418,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   setGitBranches: (gitBranches) => set({ gitBranches }),
   setCurrentGitBranch: (currentGitBranch) => set({ currentGitBranch }),
   setGitStatusMessage: (gitStatusMessage) => set({ gitStatusMessage }),
+  setSubdirBranches: (subdirBranches) => set((s) => ({
+    subdirBranches: typeof subdirBranches === "function" ? subdirBranches(s.subdirBranches) : subdirBranches,
+  })),
+  setSubdirSelected: (subdirSelected) => set({ subdirSelected }),
 }));
 
 function applyTheme(theme: AppTheme) {

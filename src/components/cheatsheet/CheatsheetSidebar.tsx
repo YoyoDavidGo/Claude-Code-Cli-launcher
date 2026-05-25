@@ -1,4 +1,4 @@
-import { Search, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Search, List } from "lucide-react";
 import type { AppLanguage, CheatsheetItem, CheatsheetItemType } from "../../types/config";
 import { t } from "../../i18n";
 
@@ -29,13 +29,16 @@ export function CheatsheetSidebar({
 }: Props) {
   if (collapsed) {
     return (
-      <div className="flex w-10 shrink-0 flex-col items-center border-r border-zinc-200/80 py-2 dark:border-zinc-800">
+      <div className="flex w-10 shrink-0 flex-col items-center border-r border-zinc-200/80 py-2 dark:border-zinc-800 relative">
+        <button onClick={onToggleCollapse} title={t(language, "cheatsheetExpand")} className="mt-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+          <List size={16} />
+        </button>
         <button
           onClick={onToggleCollapse}
           title={t(language, "cheatsheetExpand")}
-          className="rounded p-1.5 text-zinc-500 hover:bg-zinc-200/60 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 flex items-center justify-center w-5 h-8 rounded-l border border-zinc-200/80 bg-white hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-500 dark:hover:text-zinc-300"
         >
-          <PanelLeftOpen size={16} />
+          <svg width="8" height="12" viewBox="0 0 8 12"><path d="M2 2L6 6l-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
       </div>
     );
@@ -47,7 +50,7 @@ export function CheatsheetSidebar({
   ];
 
   return (
-    <div className="flex w-48 shrink-0 flex-col border-r border-zinc-200/80 dark:border-zinc-800">
+    <div className="flex w-60 shrink-0 flex-col border-r border-zinc-200/80 dark:border-zinc-800 relative">
       <div className="space-y-2 p-2">
         <div className="relative">
           <Search size={13} className="absolute left-2 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -99,10 +102,10 @@ export function CheatsheetSidebar({
 
       <button
         onClick={onToggleCollapse}
-        className="flex items-center gap-1.5 border-t border-zinc-200/80 px-3 py-1.5 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:border-zinc-800 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-200"
+        title={t(language, "cheatsheetCollapse")}
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 flex items-center justify-center w-5 h-8 rounded-l border border-zinc-200/80 bg-white hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-500 dark:hover:text-zinc-300"
       >
-        <PanelLeftClose size={14} />
-        {t(language, "cheatsheetCollapse")}
+        <svg width="8" height="12" viewBox="0 0 8 12"><path d="M6 2L2 6l4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
       </button>
     </div>
   );

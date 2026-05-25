@@ -2,7 +2,7 @@ mod commands;
 
 use commands::{
     check_claude_available, checkout_git_branch, get_current_git_branch, get_git_branches,
-    get_subdirs_git_branches, launch_claude, load_config, open_in_explorer, read_claude_settings,
+    get_subdirs_git_branches, launch_claude, load_config, open_in_explorer, open_terminal, read_claude_settings,
     read_cheatsheet, restore_cheatsheet_default, save_config,
 };
 
@@ -19,9 +19,10 @@ pub fn run() {
             checkout_git_branch,
             launch_claude,
             load_config,
+            open_in_explorer,
+            open_terminal,
             save_config,
             read_claude_settings,
-            open_in_explorer,
             read_cheatsheet,
             restore_cheatsheet_default,
         ])
