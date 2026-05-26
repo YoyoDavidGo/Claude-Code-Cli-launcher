@@ -15,6 +15,7 @@ export function GitBranchSelector() {
   } = useAppStore();
   const dark = theme === "dark";
   const [switchMsg, setSwitchMsg] = useState("");
+  const [pendingSwitch, setPendingSwitch] = useState<string | null>(null);
 
   const isParentRepo = !!(currentProjectPath && (gitBranches.length > 0 || currentGitBranch !== null));
   const hasSubdirRepos = subdirBranches.length > 0;
@@ -90,6 +91,28 @@ export function GitBranchSelector() {
 
     if (isParentRepo) {
       if (value === currentGitBranch) return;
+    } else {
+      const slashIdx = value.indexOf("/");
+      if (slashIdx === -1) return;
+      const subdir = value.substring(0, slashIdx);
+      const branch = value.substring(slashIdx + 1);
+      const info = subdirBranches.find((s) => s.subdir === subdir);
+      if (!info) return;
+      if (branch === info.current) {
+        setSubdirSelected(value);
+        return;
+      }
+    }
+
+    setPendingSwitch(value);
+  }
+
+  async function confirmSwitch() {
+    const value = pendingSwitch;
+    if (!currentProjectPath || !value) return;
+    setPendingSwitch(null);
+
+    if (isParentRepo) {
       setSwitchMsg("...");
       try {
         await invoke("checkout_git_branch", { path: currentProjectPath, branch: value });
@@ -106,12 +129,6 @@ export function GitBranchSelector() {
       if (slashIdx === -1) return;
       const subdir = value.substring(0, slashIdx);
       const branch = value.substring(slashIdx + 1);
-      const info = subdirBranches.find((s) => s.subdir === subdir);
-      if (!info) return;
-      if (branch === info.current) {
-        setSubdirSelected(value);
-        return;
-      }
       const subdirPath = `${currentProjectPath}/${subdir}`;
       setSwitchMsg("...");
       try {
@@ -133,6 +150,10 @@ export function GitBranchSelector() {
     currentGitBranch && !gitBranches.includes(currentGitBranch)
       ? [currentGitBranch, ...gitBranches]
       : gitBranches;
+
+  const currentBranchDisplay = isParentRepo
+    ? (currentGitBranch ?? "")
+    : subdirSelected;
 
   const selectCls = `w-full rounded-lg border px-2 py-1 text-xs outline-none appearance-none ${
     isRepo
@@ -198,6 +219,39 @@ export function GitBranchSelector() {
         <p className={`text-xs leading-snug ${dark ? "text-zinc-600" : "text-zinc-400"}`}>
           {t(language, "gitSubdirHint")}
         </p>
+      )}
+
+      {pendingSwitch !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className={`w-full max-w-[340px] mx-4 rounded-xl border p-4 shadow-2xl ${
+            dark ? "border-zinc-700 bg-[#1b1d1f]" : "border-zinc-200 bg-white"
+          }`}>
+            <h3 className={`text-sm font-semibold mb-2 ${dark ? "text-zinc-200" : "text-zinc-800"}`}>
+              {t(language, "gitSwitchConfirmTitle")}
+            </h3>
+            <p className={`text-xs leading-snug mb-4 ${dark ? "text-zinc-400" : "text-zinc-500"}`}>
+              {t(language, "gitSwitchConfirmMessage")
+                .replace("{current}", currentBranchDisplay)
+                .replace("{target}", pendingSwitch)}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setPendingSwitch(null)}
+                className={`px-3 py-1 text-xs rounded-lg border font-medium transition-colors ${
+                  dark ? "border-zinc-700 text-zinc-300 hover:bg-zinc-800" : "border-zinc-200 text-zinc-700 hover:bg-zinc-50"
+                }`}
+              >
+                {t(language, "cancel")}
+              </button>
+              <button
+                onClick={confirmSwitch}
+                className="px-3 py-1 text-xs rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-500 transition-colors"
+              >
+                {t(language, "confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

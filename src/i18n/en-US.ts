@@ -29,6 +29,7 @@ export const enUS = {
   aliasPlaceholder: "Enter alias (optional)",
   cancel: "Cancel",
   save: "Save",
+  confirm: "Confirm",
 
   gitBranch: "Git Branch",
   gitNotRepo: "Not a Git repo",
@@ -98,4 +99,7 @@ export const enUS = {
   cheatsheetLoadError: "Failed to load cheatsheet",
   cheatsheetRestored: "Default cheatsheet restored",
   cheatsheetReloaded: "Reloaded",
+
+  gitSwitchConfirmTitle: "Confirm Branch Switch",
+  gitSwitchConfirmMessage: "Switch from {current} to {target}, confirm?",
 };

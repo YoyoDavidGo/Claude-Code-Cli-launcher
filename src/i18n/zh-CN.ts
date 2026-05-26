@@ -29,6 +29,7 @@ export const zhCN = {
   aliasPlaceholder: "输入备注名（可留空）",
   cancel: "取消",
   save: "保存",
+  confirm: "确认",
 
   gitBranch: "Git 分支",
   gitNotRepo: "非 Git 仓库",
@@ -98,6 +99,9 @@ export const zhCN = {
   cheatsheetLoadError: "速查表加载失败",
   cheatsheetRestored: "已恢复默认速查表",
   cheatsheetReloaded: "已重新加载",
+
+  gitSwitchConfirmTitle: "确认切换分支",
+  gitSwitchConfirmMessage: "当前项目由 {current} 切换到 {target}，确认切换？",
 };
 
 export type I18nKeys = keyof typeof zhCN;
