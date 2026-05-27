@@ -33,7 +33,7 @@ src/                    # React + TypeScript frontend
 src-tauri/
   src/commands.rs       # All Tauri commands (the only Rust file to edit)
   src/lib.rs            # Registers commands + plugins — rarely touched
-  tauri.conf.json       # Window config: 900×600, min 900×600
+  tauri.conf.json       # Window config: 900×584, min 900×584
   capabilities/default.json  # Permission allowlist (dialog:default etc.)
 ```
 

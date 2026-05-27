@@ -2,8 +2,8 @@
 CCL-CHEATSHEET
 schema: 1
 lang: en-US
-version: 2026.05.24
-updatedAt: 2026-05-24
+version: 2026.05.25
+updatedAt: 2026-05-25
 source: official-docs
 -->
 
@@ -14,7 +14,7 @@ source: official-docs
 
 > Manage agent configurations
 
-### Description
+### Purpose
 
 Manage agent configurations
 
@@ -24,11 +24,39 @@ Manage agent configurations
 /agents
 ~~~
 
+## /branch
+
+> Branch conversation at current point
+
+### Purpose
+
+Create a branch of the current conversation at this point. Switches you into the branch and preserves the original, which you can return to with /resume. Alias: /fork. When CLAUDE_CODE_FORK_SUBAGENT is set, /fork instead spawns a forked subagent and is no longer an alias for this command
+
+### Usage
+
+~~~text
+/branch [name]
+~~~
+
+## /btw
+
+> Ask a quick side question
+
+### Purpose
+
+Ask a quick side question without adding to the conversation
+
+### Usage
+
+~~~text
+/btw
+~~~
+
 ## /clear
 
-> Start a new conversation with empty
+> Start a new conversation with empty context
 
-### Description
+### Purpose
 
 Start a new conversation with empty context. The previous conversation stays available in /resume. Pass a name to label the previous conversation in the /resume picker. To free up context while continuing the same conversation, use /compact instead. Aliases: /reset, /new
 
@@ -38,11 +66,25 @@ Start a new conversation with empty context. The previous conversation stays ava
 /clear [name]
 ~~~
 
+## /code-review
+
+> Review diff for correctness bugs
+
+### Purpose
+
+Review the current diff for correctness bugs and report findings without editing files. Lower effort levels return fewer, higher-confidence findings, while high through max give broader coverage and may include uncertain findings. Without an effort argument, the review uses the session's current effort. Pass --comment to post findings as inline comments on the current GitHub PR. Pass a path or PR reference to review a specific target. Formerly /simplify, which still works as an alias
+
+### Usage
+
+~~~text
+/code-review [low|medium|high|xhigh|max] [--comment] [target]
+~~~
+
 ## /compact
 
-> Free up context by summarizing the
+> Free up context by summarizing conversation
 
-### Description
+### Purpose
 
 Free up context by summarizing the conversation so far. Optionally pass focus instructions for the summary. See how compaction handles rules, skills, and memory files
 
@@ -54,9 +96,9 @@ Free up context by summarizing the conversation so far. Optionally pass focus in
 
 ## /config
 
-> Open the Settings interface to adjust
+> Open Settings interface
 
-### Description
+### Purpose
 
 Open the Settings interface to adjust theme, model, output style, and other preferences. Alias: /settings
 
@@ -68,9 +110,9 @@ Open the Settings interface to adjust theme, model, output style, and other pref
 
 ## /context
 
-> Visualize current context usage as a
+> Visualize current context usage as a colored grid
 
-### Description
+### Purpose
 
 Visualize current context usage as a colored grid. Shows optimization suggestions for context-heavy tools, memory bloat, and capacity warnings. In fullscreen mode the per-item breakdown is collapsed to keep the grid visible. Pass all to expand it
 
@@ -80,25 +122,67 @@ Visualize current context usage as a colored grid. Shows optimization suggestion
 /context [all]
 ~~~
 
-## /cost
+## /diff
 
-> Alias for /usage
+> Open interactive diff viewer
 
-### Description
+### Purpose
 
-Alias for /usage
+Open an interactive diff viewer showing uncommitted changes and per-turn diffs. Use left/right arrows to switch between the current git diff and individual Claude turns, and up/down to browse files
 
 ### Usage
 
 ~~~text
-/cost
+/diff
+~~~
+
+## /effort
+
+> Set the model effort level
+
+### Purpose
+
+Set the model effort level. Accepts low, medium, high, xhigh, or max; available levels depend on the model and max is session-only. auto resets to the model default. Without an argument, opens an interactive slider; use left and right arrows to pick a level and Enter to apply. Takes effect immediately without waiting for the current response to finish
+
+### Usage
+
+~~~text
+/effort [level|auto]
+~~~
+
+## /fast
+
+> Toggle fast mode on or off
+
+### Purpose
+
+Toggle fast mode on or off
+
+### Usage
+
+~~~text
+/fast [on|off]
+~~~
+
+## /goal
+
+> Set a goal
+
+### Purpose
+
+Set a goal: Claude keeps working across turns until the condition is met. With no argument, shows the current or most recently achieved goal. clear, stop, off, reset, none, or cancel removes an active goal early
+
+### Usage
+
+~~~text
+/goal [condition|clear]
 ~~~
 
 ## /help
 
 > Show help and available commands
 
-### Description
+### Purpose
 
 Show help and available commands
 
@@ -112,7 +196,7 @@ Show help and available commands
 
 > Initialize project with a CLAUDE
 
-### Description
+### Purpose
 
 Initialize project with a CLAUDE.md guide. Set CLAUDE_CODE_NEW_INIT=1 for an interactive flow that also walks through skills, hooks, and personal memory files
 
@@ -126,7 +210,7 @@ Initialize project with a CLAUDE.md guide. Set CLAUDE_CODE_NEW_INIT=1 for an int
 
 > Set the AI model for the current session
 
-### Description
+### Purpose
 
 Set the AI model for the current session. For models that support it, use left/right arrows to adjust effort level. With no argument, opens a picker; press d on a row to also save that model as the default for new sessions. The picker asks for confirmation when the conversation has prior output, since the next response re-reads the full history without cached context. Once confirmed, the change applies without waiting for the current response to finish
 
@@ -138,9 +222,9 @@ Set the AI model for the current session. For models that support it, use left/r
 
 ## /permissions
 
-> Manage allow, ask, and deny rules for
+> Manage tool permission rules
 
-### Description
+### Purpose
 
 Manage allow, ask, and deny rules for tool permissions. Opens an interactive dialog where you can view rules by scope, add or remove rules, manage working directories, and review recent auto mode denials. Alias: /allowed-tools
 
@@ -150,11 +234,25 @@ Manage allow, ask, and deny rules for tool permissions. Opens an interactive dia
 /permissions
 ~~~
 
+## /rename
+
+> Rename current session
+
+### Purpose
+
+Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history
+
+### Usage
+
+~~~text
+/rename [name]
+~~~
+
 ## /resume
 
-> Resume a conversation by ID or name, or
+> Resume a conversation by ID or name
 
-### Description
+### Purpose
 
 Resume a conversation by ID or name, or open the session picker. As of v2.1.144, background sessions appear in the picker marked with bg. Alias: /continue
 
@@ -166,9 +264,9 @@ Resume a conversation by ID or name, or open the session picker. As of v2.1.144,
 
 ## /review
 
-> Review a pull request locally in your
+> Review a pull request locally
 
-### Description
+### Purpose
 
 Review a pull request locally in your current session. For a deeper cloud-based review, see /ultrareview
 
@@ -178,11 +276,53 @@ Review a pull request locally in your current session. For a deeper cloud-based 
 /review [PR]
 ~~~
 
+## /rewind
+
+> Rewind conversation to previous point
+
+### Purpose
+
+Rewind the conversation and/or code to a previous point, or summarize from a selected message. See checkpointing. Aliases: /checkpoint, /undo
+
+### Usage
+
+~~~text
+/rewind
+~~~
+
+## /skills
+
+> List available skills
+
+### Purpose
+
+List available skills. Press t to sort by token count. Press Space to hide a skill from Claude or the / menu, then Enter to save
+
+### Usage
+
+~~~text
+/skills
+~~~
+
+## /status
+
+> Show version, model, and connectivity
+
+### Purpose
+
+Open the Settings interface (Status tab) showing version, model, account, and connectivity. Works while Claude is responding, without waiting for the current response to finish
+
+### Usage
+
+~~~text
+/status
+~~~
+
 ## /usage
 
-> Show session cost, plan usage limits,
+> Show session cost and usage stats
 
-### Description
+### Purpose
 
 Show session cost, plan usage limits, and activity stats. See the cost tracking guide for subscription-specific details. /cost and /stats are aliases
 
@@ -196,11 +336,15 @@ Show session cost, plan usage limits, and activity stats. See the cost tracking 
 
 ## Ctrl + C
 
-> Interrupt, or clear input
+> Interrupt running operation or clear input
 
 ### Description
 
 Interrupt, or clear input
+
+### Context
+
+Interrupts a running operation. If nothing is running, the first press clears the prompt input and a second press exits Claude Code
 
 ### Usage
 
@@ -208,13 +352,35 @@ Interrupt, or clear input
 Ctrl + C
 ~~~
 
+## Ctrl + D
+
+> Exit Claude Code session — EOF signal
+
+### Description
+
+Exit Claude Code session
+
+### Context
+
+EOF signal
+
+### Usage
+
+~~~text
+Ctrl + D
+~~~
+
 ## Ctrl + L
 
-> Redraw screen
+> Redraw screen — Forces a full terminal redraw
 
 ### Description
 
 Redraw screen
+
+### Context
+
+Forces a full terminal redraw. Input and conversation history are kept. Use this to recover if the display becomes garbled or partially blank
 
 ### Usage
 
@@ -230,6 +396,10 @@ Ctrl + L
 
 Toggle transcript viewer
 
+### Context
+
+Shows detailed tool usage and execution. Also expands MCP calls, which collapse to a single line like "Called slack 3 times" by default
+
 ### Usage
 
 ~~~text
@@ -243,6 +413,10 @@ Ctrl + O
 ### Description
 
 Reverse search command history
+
+### Context
+
+Search through previous commands interactively
 
 ### Usage
 
@@ -258,6 +432,10 @@ Ctrl + R
 
 Paste image from clipboard
 
+### Context
+
+Inserts an [Image #N] chip at the cursor so you can reference it positionally in your prompt
+
 ### Usage
 
 ~~~text
@@ -266,11 +444,15 @@ Ctrl + V
 
 ## Esc
 
-> Interrupt Claude
+> Stop current response mid-turn
 
 ### Description
 
 Interrupt Claude
+
+### Context
+
+Stop the current response or tool call mid-turn so you can redirect. Claude keeps the work done so far
 
 ### Usage
 
@@ -280,11 +462,15 @@ Esc
 
 ## Esc + Esc
 
-> Clear input draft, or rewind
+> Clear input draft or open rewind menu
 
 ### Description
 
 Clear input draft, or rewind
+
+### Context
+
+When the prompt input contains text, double Esc clears it and saves the draft to history so Up recalls it. When the input is empty, double Esc opens the rewind menu to restore or summarize code and conversation from a previous point
 
 ### Usage
 
@@ -294,11 +480,15 @@ Esc + Esc
 
 ## Shift + Tab
 
-> Cycle permission modes
+> Cycle through permission modes
 
 ### Description
 
 Cycle permission modes
+
+### Context
+
+Cycle through default, acceptEdits, plan, and any modes you have enabled, such as auto or bypassPermissions. See permission modes.
 
 ### Usage
 
@@ -308,11 +498,15 @@ Shift + Tab
 
 ## Option + P
 
-> Switch model
+> Switch model without clearing prompt
 
 ### Description
 
 Switch model
+
+### Context
+
+Switch models without clearing your prompt
 
 ### Usage
 
@@ -320,13 +514,115 @@ Switch model
 Option + P
 ~~~
 
-## Shift + Enter
+## Ctrl + A
 
-> Shift+Enter — Native in iTerm2,
+> Move cursor to start of line
 
 ### Description
 
-Shift+Enter — Native in iTerm2, WezTerm, Ghostty, Kitty, Warp, Apple Terminal, Windows Terminal
+Move cursor to start of current line
+
+### Context
+
+In multiline input, moves to the start of the current logical line
+
+### Usage
+
+~~~text
+Ctrl + A
+~~~
+
+## Ctrl + E
+
+> Move cursor to end of line
+
+### Description
+
+Move cursor to end of current line
+
+### Context
+
+In multiline input, moves to the end of the current logical line
+
+### Usage
+
+~~~text
+Ctrl + E
+~~~
+
+## Ctrl + K
+
+> Delete to end of line
+
+### Description
+
+Delete to end of line
+
+### Context
+
+Stores deleted text for pasting
+
+### Usage
+
+~~~text
+Ctrl + K
+~~~
+
+## Ctrl + U
+
+> Delete from cursor to line start
+
+### Description
+
+Delete from cursor to line start
+
+### Context
+
+Stores deleted text for pasting. Repeat to clear across lines in multiline input. On macOS, terminal emulators including iTerm2 and Terminal.app map Cmd+Backspace to this shortcut
+
+### Usage
+
+~~~text
+Ctrl + U
+~~~
+
+## Option + Enter
+
+> Option key newline
+
+### Description
+
+Multiline input
+
+### Method
+
+Option key
+
+### Context
+
+After enabling Option as Meta on macOS
+
+### Usage
+
+~~~text
+Option + Enter
+~~~
+
+## Shift + Enter
+
+> Shift+Enter newline
+
+### Description
+
+Multiline input
+
+### Method
+
+Shift+Enter
+
+### Context
+
+Native in iTerm2, WezTerm, Ghostty, Kitty, Warp, Apple Terminal, Windows Terminal
 
 ### Usage
 
@@ -336,11 +632,19 @@ Shift + Enter
 
 ## Ctrl + J
 
-> Control sequence — Works in any
+> Insert newline via control sequence
 
 ### Description
 
-Control sequence — Works in any terminal without configuration
+Multiline input
+
+### Method
+
+Control sequence
+
+### Context
+
+Works in any terminal without configuration
 
 ### Usage
 
@@ -348,13 +652,35 @@ Control sequence — Works in any terminal without configuration
 Ctrl + J
 ~~~
 
+## / at start
+
+> Command or skill — See commands and skills
+
+### Description
+
+Command or skill
+
+### Notes
+
+See commands and skills
+
+### Usage
+
+~~~text
+/ at start
+~~~
+
 ## @
 
-> File path mention
+> File path mention — Trigger file path autocomplete
 
 ### Description
 
 File path mention
+
+### Notes
+
+Trigger file path autocomplete
 
 ### Usage
 
@@ -372,7 +698,7 @@ File path mention
 
 > Add a working directory for file access
 
-### Description
+### Purpose
 
 Add a working directory for file access during the current session. Most .claude/ configuration is not discovered from the added directory. You can later resume the session from the added directory with --continue or --resume
 
@@ -384,9 +710,9 @@ Add a working directory for file access during the current session. Most .claude
 
 ## /autofix-pr
 
-> Spawn a Claude Code on the web session
+> Auto-fix PR CI failures and review comments
 
-### Description
+### Purpose
 
 Spawn a Claude Code on the web session that watches the current branch's PR and pushes fixes when CI fails or reviewers leave comments. Detects the open PR from your checked-out branch with gh pr view; to watch a different PR, check out its branch first. By default the remote session is told to fix every CI failure and review comment; pass a prompt to give it different instructions, for example /autofix-pr only fix lint and type errors. Requires the gh CLI and access to Claude Code on the web
 
@@ -398,9 +724,9 @@ Spawn a Claude Code on the web session that watches the current branch's PR and 
 
 ## /background
 
-> Detach the current session to run as a
+> Detach session as background agent
 
-### Description
+### Purpose
 
 Detach the current session to run as a background agent and free this terminal. Pass a prompt to send one more instruction before detaching. Monitor the session with claude agents. Alias: /bg
 
@@ -412,9 +738,9 @@ Detach the current session to run as a background agent and free this terminal. 
 
 ## /batch
 
-> Orchestrate large-scale changes across
+> Orchestrate large-scale parallel changes
 
-### Description
+### Purpose
 
 Orchestrate large-scale changes across a codebase in parallel. Researches the codebase, decomposes the work into 5 to 30 independent units, and presents a plan. Once approved, spawns one background subagent per unit in an isolated git worktree. Each subagent implements its unit, runs tests, and opens a pull request. Requires a git repository. Example: /batch migrate src/ from Solid to React
 
@@ -424,39 +750,11 @@ Orchestrate large-scale changes across a codebase in parallel. Researches the co
 /batch
 ~~~
 
-## /branch
-
-> Create a branch of the current
-
-### Description
-
-Create a branch of the current conversation at this point. Switches you into the branch and preserves the original, which you can return to with /resume. Alias: /fork. When CLAUDE_CODE_FORK_SUBAGENT is set, /fork instead spawns a forked subagent and is no longer an alias for this command
-
-### Usage
-
-~~~text
-/branch [name]
-~~~
-
-## /btw
-
-> Ask a quick side question without
-
-### Description
-
-Ask a quick side question without adding to the conversation
-
-### Usage
-
-~~~text
-/btw
-~~~
-
 ## /chrome
 
 > Configure Claude in Chrome settings
 
-### Description
+### Purpose
 
 Configure Claude in Chrome settings
 
@@ -468,9 +766,9 @@ Configure Claude in Chrome settings
 
 ## /claude-api
 
-> Load Claude API reference material for
+> Load Claude API reference material
 
-### Description
+### Purpose
 
 Load Claude API reference material for your project's language (Python, TypeScript, Java, Go, Ruby, C#, PHP, or cURL) and Managed Agents reference. Covers tool use, streaming, batches, structured outputs, and common pitfalls. Also activates automatically when your code imports anthropic or @anthropic-ai/sdk. Run /claude-api migrate to upgrade existing Claude API code to a newer model: Claude asks which files to scan and which model to target, then updates model IDs, thinking configuration, and other parameters that changed between versions. Run /claude-api managed-agents-onboard for an interactive walkthrough that creates a new Managed Agent from scratch
 
@@ -480,25 +778,11 @@ Load Claude API reference material for your project's language (Python, TypeScri
 /claude-api [migrate|managed-agents-onboard]
 ~~~
 
-## /code-review
-
-> Review the current diff for correctness
-
-### Description
-
-Review the current diff for correctness bugs and report findings without editing files. Lower effort levels return fewer, higher-confidence findings, while high through max give broader coverage and may include uncertain findings. Without an effort argument, the review uses the session's current effort. Pass --comment to post findings as inline comments on the current GitHub PR. Pass a path or PR reference to review a specific target. Formerly /simplify, which still works as an alias
-
-### Usage
-
-~~~text
-/code-review [low|medium|high|xhigh|max] [--comment] [target]
-~~~
-
 ## /color
 
-> Set the prompt bar color for the
+> Set the prompt bar color for the current session
 
-### Description
+### Purpose
 
 Set the prompt bar color for the current session. Available colors: red, blue, green, yellow, purple, orange, pink, cyan. Use default to reset, or run with no argument to pick a random color. When Remote Control is connected, the color syncs to claude.ai/code
 
@@ -510,9 +794,9 @@ Set the prompt bar color for the current session. Available colors: red, blue, g
 
 ## /copy
 
-> Copy the last assistant response to
+> Copy the last assistant response to clipboard
 
-### Description
+### Purpose
 
 Copy the last assistant response to clipboard. Pass a number N to copy the Nth-latest response: /copy 2 copies the second-to-last. When code blocks are present, shows an interactive picker to select individual blocks or the full response. Press w in the picker to write the selection to a file instead of the clipboard, which is useful over SSH
 
@@ -522,11 +806,25 @@ Copy the last assistant response to clipboard. Pass a number N to copy the Nth-l
 /copy [N]
 ~~~
 
+## /cost
+
+> Alias for /usage
+
+### Purpose
+
+Alias for /usage
+
+### Usage
+
+~~~text
+/cost
+~~~
+
 ## /debug
 
-> Enable debug logging for the current
+> Enable debug logging for session
 
-### Description
+### Purpose
 
 Enable debug logging for the current session and troubleshoot issues by reading the session debug log. Debug logging is off by default unless you started with claude --debug, so running /debug mid-session starts capturing logs from that point forward. Optionally describe the issue to focus the analysis
 
@@ -538,9 +836,9 @@ Enable debug logging for the current session and troubleshoot issues by reading 
 
 ## /desktop
 
-> Continue the current session in the
+> Continue session in Desktop app
 
-### Description
+### Purpose
 
 Continue the current session in the Claude Code Desktop app. Requires macOS or Windows and a Claude subscription. Alias: /app
 
@@ -550,25 +848,11 @@ Continue the current session in the Claude Code Desktop app. Requires macOS or W
 /desktop
 ~~~
 
-## /diff
-
-> Open an interactive diff viewer showing
-
-### Description
-
-Open an interactive diff viewer showing uncommitted changes and per-turn diffs. Use left/right arrows to switch between the current git diff and individual Claude turns, and up/down to browse files
-
-### Usage
-
-~~~text
-/diff
-~~~
-
 ## /doctor
 
-> Diagnose and verify your Claude Code
+> Diagnose and verify installation
 
-### Description
+### Purpose
 
 Diagnose and verify your Claude Code installation and settings. Results show with status icons. Press f to have Claude fix any reported issues
 
@@ -578,25 +862,11 @@ Diagnose and verify your Claude Code installation and settings. Results show wit
 /doctor
 ~~~
 
-## /effort
-
-> Set the model effort level
-
-### Description
-
-Set the model effort level. Accepts low, medium, high, xhigh, or max; available levels depend on the model and max is session-only. auto resets to the model default. Without an argument, opens an interactive slider; use left and right arrows to pick a level and Enter to apply. Takes effect immediately without waiting for the current response to finish
-
-### Usage
-
-~~~text
-/effort [level|auto]
-~~~
-
 ## /exit
 
 > Exit the CLI
 
-### Description
+### Purpose
 
 Exit the CLI. In an attached background session, this detaches and the session keeps running. Alias: /quit
 
@@ -608,9 +878,9 @@ Exit the CLI. In an attached background session, this detaches and the session k
 
 ## /export
 
-> Export the current conversation as
+> Export the current conversation as plain text
 
-### Description
+### Purpose
 
 Export the current conversation as plain text. With a filename, writes directly to that file. Without, opens a dialog to copy to clipboard or save to a file
 
@@ -620,25 +890,11 @@ Export the current conversation as plain text. With a filename, writes directly 
 /export [filename]
 ~~~
 
-## /fast
-
-> Toggle fast mode on or off
-
-### Description
-
-Toggle fast mode on or off
-
-### Usage
-
-~~~text
-/fast [on|off]
-~~~
-
 ## /feedback
 
-> Submit feedback, report a bug, or share
+> Submit feedback or report a bug
 
-### Description
+### Purpose
 
 Submit feedback, report a bug, or share your conversation. Aliases: /bug, /share
 
@@ -650,9 +906,9 @@ Submit feedback, report a bug, or share your conversation. Aliases: /bug, /share
 
 ## /fewer-permission-prompts
 
-> Scan your transcripts for common
+> Reduce permission prompts via allowlist
 
-### Description
+### Purpose
 
 Scan your transcripts for common read-only Bash and MCP tool calls, then add a prioritized allowlist to project .claude/settings.json to reduce permission prompts
 
@@ -664,9 +920,9 @@ Scan your transcripts for common read-only Bash and MCP tool calls, then add a p
 
 ## /focus
 
-> Toggle the focus view, which shows only
+> Toggle focus view
 
-### Description
+### Purpose
 
 Toggle the focus view, which shows only your last prompt, a one-line tool-call summary with edit diffstats, and the final response. The selection persists across sessions; set viewMode in settings to override it. Only available in fullscreen rendering
 
@@ -676,25 +932,11 @@ Toggle the focus view, which shows only your last prompt, a one-line tool-call s
 /focus
 ~~~
 
-## /goal
-
-> Set a goal
-
-### Description
-
-Set a goal: Claude keeps working across turns until the condition is met. With no argument, shows the current or most recently achieved goal. clear, stop, off, reset, none, or cancel removes an active goal early
-
-### Usage
-
-~~~text
-/goal [condition|clear]
-~~~
-
 ## /heapdump
 
-> Write a JavaScript heap snapshot and a
+> Write JS heap snapshot for diagnostics
 
-### Description
+### Purpose
 
 Write a JavaScript heap snapshot and a memory breakdown to ~/Desktop, or your home directory on Linux without a Desktop folder, for diagnosing high memory usage. See troubleshooting
 
@@ -708,7 +950,7 @@ Write a JavaScript heap snapshot and a memory breakdown to ~/Desktop, or your ho
 
 > View hook configurations for tool events
 
-### Description
+### Purpose
 
 View hook configurations for tool events
 
@@ -722,7 +964,7 @@ View hook configurations for tool events
 
 > Manage IDE integrations and show status
 
-### Description
+### Purpose
 
 Manage IDE integrations and show status
 
@@ -734,9 +976,9 @@ Manage IDE integrations and show status
 
 ## /insights
 
-> Generate a report analyzing your Claude
+> Generate session analysis report
 
-### Description
+### Purpose
 
 Generate a report analyzing your Claude Code sessions, including project areas, interaction patterns, and friction points
 
@@ -748,9 +990,9 @@ Generate a report analyzing your Claude Code sessions, including project areas, 
 
 ## /install-github-app
 
-> Set up the Claude GitHub Actions app
+> Set up Claude GitHub Actions app
 
-### Description
+### Purpose
 
 Set up the Claude GitHub Actions app for a repository. Walks you through selecting a repo and configuring the integration
 
@@ -764,7 +1006,7 @@ Set up the Claude GitHub Actions app for a repository. Walks you through selecti
 
 > Install the Claude Slack app
 
-### Description
+### Purpose
 
 Install the Claude Slack app. Opens a browser to complete the OAuth flow
 
@@ -776,9 +1018,9 @@ Install the Claude Slack app. Opens a browser to complete the OAuth flow
 
 ## /keybindings
 
-> Open or create your keybindings
+> Open or create your keybindings configuration file
 
-### Description
+### Purpose
 
 Open or create your keybindings configuration file
 
@@ -792,7 +1034,7 @@ Open or create your keybindings configuration file
 
 > Sign in to your Anthropic account
 
-### Description
+### Purpose
 
 Sign in to your Anthropic account
 
@@ -806,7 +1048,7 @@ Sign in to your Anthropic account
 
 > Sign out from your Anthropic account
 
-### Description
+### Purpose
 
 Sign out from your Anthropic account
 
@@ -818,9 +1060,9 @@ Sign out from your Anthropic account
 
 ## /loop
 
-> Run a prompt repeatedly while the
+> Run a prompt repeatedly on schedule
 
-### Description
+### Purpose
 
 Run a prompt repeatedly while the session stays open. Omit the interval and Claude self-paces between iterations. Omit the prompt and, where available, Claude runs an autonomous maintenance check or the prompt in .claude/loop.md. Example: /loop 5m check if the deploy finished. See Run prompts on a schedule. Alias: /proactive
 
@@ -832,9 +1074,9 @@ Run a prompt repeatedly while the session stays open. Omit the interval and Clau
 
 ## /mcp
 
-> Manage MCP server connections and OAuth
+> Manage MCP server connections
 
-### Description
+### Purpose
 
 Manage MCP server connections and OAuth authentication
 
@@ -848,7 +1090,7 @@ Manage MCP server connections and OAuth authentication
 
 > Edit CLAUDE
 
-### Description
+### Purpose
 
 Edit CLAUDE.md memory files, enable or disable auto-memory, and view auto-memory entries
 
@@ -860,9 +1102,9 @@ Edit CLAUDE.md memory files, enable or disable auto-memory, and view auto-memory
 
 ## /mobile
 
-> Show QR code to download the Claude
+> Show QR code to download the Claude mobile app
 
-### Description
+### Purpose
 
 Show QR code to download the Claude mobile app. Aliases: /ios, /android
 
@@ -874,9 +1116,9 @@ Show QR code to download the Claude mobile app. Aliases: /ios, /android
 
 ## /passes
 
-> Share a free week of Claude Code with
+> Share a free week of Claude Code with friends
 
-### Description
+### Purpose
 
 Share a free week of Claude Code with friends. Only visible if your account is eligible
 
@@ -890,7 +1132,7 @@ Share a free week of Claude Code with friends. Only visible if your account is e
 
 > Enter plan mode directly from the prompt
 
-### Description
+### Purpose
 
 Enter plan mode directly from the prompt. Pass an optional description to enter plan mode and immediately start with that task, for example /plan fix the auth bug
 
@@ -904,7 +1146,7 @@ Enter plan mode directly from the prompt. Pass an optional description to enter 
 
 > Manage Claude Code plugins
 
-### Description
+### Purpose
 
 Manage Claude Code plugins
 
@@ -916,9 +1158,9 @@ Manage Claude Code plugins
 
 ## /powerup
 
-> Discover Claude Code features through
+> Discover features via interactive lessons
 
-### Description
+### Purpose
 
 Discover Claude Code features through quick interactive lessons with animated demos
 
@@ -932,7 +1174,7 @@ Discover Claude Code features through quick interactive lessons with animated de
 
 > Removed in v2
 
-### Description
+### Purpose
 
 Removed in v2.1.91. Ask Claude directly to view pull request comments instead. On earlier versions, fetches and displays comments from a GitHub pull request; automatically detects the PR for the current branch, or pass a PR URL or number. Requires the gh CLI
 
@@ -946,7 +1188,7 @@ Removed in v2.1.91. Ask Claude directly to view pull request comments instead. O
 
 > View and update your privacy settings
 
-### Description
+### Purpose
 
 View and update your privacy settings. Only available for Pro and Max plan subscribers
 
@@ -958,9 +1200,9 @@ View and update your privacy settings. Only available for Pro and Max plan subsc
 
 ## /radio
 
-> Open Claude FM lo-fi radio in your
+> Open Claude FM lo-fi radio in your browser
 
-### Description
+### Purpose
 
 Open Claude FM lo-fi radio in your browser. Prints the stream URL when no browser is available. Not available on Bedrock, Vertex, or Foundry
 
@@ -972,9 +1214,9 @@ Open Claude FM lo-fi radio in your browser. Prints the stream URL when no browse
 
 ## /recap
 
-> Generate a one-line summary of the
+> Generate one-line session summary
 
-### Description
+### Purpose
 
 Generate a one-line summary of the current session on demand. See Session recap for the automatic recap that appears after you've been away
 
@@ -986,9 +1228,9 @@ Generate a one-line summary of the current session on demand. See Session recap 
 
 ## /release-notes
 
-> View the changelog in an interactive
+> View changelog in version picker
 
-### Description
+### Purpose
 
 View the changelog in an interactive version picker. Select a specific version to see its release notes, or choose to show all versions
 
@@ -1000,9 +1242,9 @@ View the changelog in an interactive version picker. Select a specific version t
 
 ## /reload-plugins
 
-> Reload all active plugins to apply
+> Reload all active plugins
 
-### Description
+### Purpose
 
 Reload all active plugins to apply pending changes without restarting. Reports counts for each reloaded component and flags any load errors
 
@@ -1014,9 +1256,9 @@ Reload all active plugins to apply pending changes without restarting. Reports c
 
 ## /remote-control
 
-> Make this session available for remote
+> Enable remote control from claude.ai
 
-### Description
+### Purpose
 
 Make this session available for remote control from claude.ai. Alias: /rc
 
@@ -1028,9 +1270,9 @@ Make this session available for remote control from claude.ai. Alias: /rc
 
 ## /remote-env
 
-> Configure the default remote
+> Configure default remote environment
 
-### Description
+### Purpose
 
 Configure the default remote environment for web sessions started with --remote
 
@@ -1040,39 +1282,11 @@ Configure the default remote environment for web sessions started with --remote
 /remote-env
 ~~~
 
-## /rename
-
-> Rename the current session and show the
-
-### Description
-
-Rename the current session and show the name on the prompt bar. Without a name, auto-generates one from conversation history
-
-### Usage
-
-~~~text
-/rename [name]
-~~~
-
-## /rewind
-
-> Rewind the conversation and/or code to
-
-### Description
-
-Rewind the conversation and/or code to a previous point, or summarize from a selected message. See checkpointing. Aliases: /checkpoint, /undo
-
-### Usage
-
-~~~text
-/rewind
-~~~
-
 ## /run
 
-> Launch and drive your project's app to
+> Launch and drive project app
 
-### Description
+### Purpose
 
 Launch and drive your project's app to see a change working in the running app, not just in tests. See Run and verify your app. Requires Claude Code v2.1.145 or later
 
@@ -1084,9 +1298,9 @@ Launch and drive your project's app to see a change working in the running app, 
 
 ## /run-skill-generator
 
-> Teach /run and /verify how to build,
+> Teach /run how to build and drive app
 
-### Description
+### Purpose
 
 Teach /run and /verify how to build, launch, and drive your project's app from a clean environment by writing a per-project skill. Requires Claude Code v2.1.145 or later
 
@@ -1100,7 +1314,7 @@ Teach /run and /verify how to build, launch, and drive your project's app from a
 
 > Toggle sandbox mode
 
-### Description
+### Purpose
 
 Toggle sandbox mode. Available on supported platforms only
 
@@ -1112,9 +1326,9 @@ Toggle sandbox mode. Available on supported platforms only
 
 ## /schedule
 
-> Create, update, list, or run routines,
+> Create and manage cloud routines
 
-### Description
+### Purpose
 
 Create, update, list, or run routines, which execute on Anthropic-managed cloud infrastructure. Claude walks you through the setup conversationally. Alias: /routines
 
@@ -1128,7 +1342,7 @@ Create, update, list, or run routines, which execute on Anthropic-managed cloud 
 
 > Adjust mouse wheel scroll speed
 
-### Description
+### Purpose
 
 Adjust mouse wheel scroll speed interactively, with a ruler you can scroll while the dialog is open to preview the change. Available in fullscreen rendering only and not in the JetBrains IDE terminal
 
@@ -1140,9 +1354,9 @@ Adjust mouse wheel scroll speed interactively, with a ruler you can scroll while
 
 ## /security-review
 
-> Analyze pending changes on the current
+> Analyze changes for security vulnerabilities
 
-### Description
+### Purpose
 
 Analyze pending changes on the current branch for security vulnerabilities. Reviews the git diff and identifies risks like injection, auth issues, and data exposure
 
@@ -1154,9 +1368,9 @@ Analyze pending changes on the current branch for security vulnerabilities. Revi
 
 ## /setup-bedrock
 
-> Configure Amazon Bedrock
+> Configure Amazon Bedrock via wizard
 
-### Description
+### Purpose
 
 Configure Amazon Bedrock authentication, region, and model pins through an interactive wizard. Only visible when CLAUDE_CODE_USE_BEDROCK=1 is set. First-time Bedrock users can also access this wizard from the login screen
 
@@ -1168,9 +1382,9 @@ Configure Amazon Bedrock authentication, region, and model pins through an inter
 
 ## /setup-vertex
 
-> Configure Google Vertex AI
+> Configure Google Vertex AI via wizard
 
-### Description
+### Purpose
 
 Configure Google Vertex AI authentication, project, region, and model pins through an interactive wizard. Only visible when CLAUDE_CODE_USE_VERTEX=1 is set. First-time Vertex AI users can also access this wizard from the login screen
 
@@ -1180,25 +1394,11 @@ Configure Google Vertex AI authentication, project, region, and model pins throu
 /setup-vertex
 ~~~
 
-## /skills
-
-> List available skills
-
-### Description
-
-List available skills. Press t to sort by token count. Press Space to hide a skill from Claude or the / menu, then Enter to save
-
-### Usage
-
-~~~text
-/skills
-~~~
-
 ## /stats
 
 > Alias for /usage
 
-### Description
+### Purpose
 
 Alias for /usage. Opens on the Stats tab
 
@@ -1208,25 +1408,11 @@ Alias for /usage. Opens on the Stats tab
 /stats
 ~~~
 
-## /status
-
-> Open the Settings interface (Status
-
-### Description
-
-Open the Settings interface (Status tab) showing version, model, account, and connectivity. Works while Claude is responding, without waiting for the current response to finish
-
-### Usage
-
-~~~text
-/status
-~~~
-
 ## /statusline
 
 > Configure Claude Code's status line
 
-### Description
+### Purpose
 
 Configure Claude Code's status line. Describe what you want, or run without arguments to auto-configure from your shell prompt
 
@@ -1240,7 +1426,7 @@ Configure Claude Code's status line. Describe what you want, or run without argu
 
 > Order Claude Code stickers
 
-### Description
+### Purpose
 
 Order Claude Code stickers
 
@@ -1254,7 +1440,7 @@ Order Claude Code stickers
 
 > Stop the current background session
 
-### Description
+### Purpose
 
 Stop the current background session. Only available while attached to a background session; the transcript and any worktree are kept. To detach without stopping, use /exit or press ←
 
@@ -1268,7 +1454,7 @@ Stop the current background session. Only available while attached to a backgrou
 
 > List and manage background tasks
 
-### Description
+### Purpose
 
 List and manage background tasks. Also available as /bashes
 
@@ -1280,9 +1466,9 @@ List and manage background tasks. Also available as /bashes
 
 ## /team-onboarding
 
-> Generate a team onboarding guide from
+> Generate team onboarding guide from history
 
-### Description
+### Purpose
 
 Generate a team onboarding guide from your Claude Code usage history. Claude analyzes your sessions, commands, and MCP server usage from the past 30 days and produces a markdown guide a teammate can paste as a first message to get set up quickly. For claude.ai subscribers on Pro, Max, Team, and Enterprise plans, also returns a share link teammates can open directly in Claude Code
 
@@ -1294,9 +1480,9 @@ Generate a team onboarding guide from your Claude Code usage history. Claude ana
 
 ## /teleport
 
-> Pull a Claude Code on the web session
+> Pull web session into terminal
 
-### Description
+### Purpose
 
 Pull a Claude Code on the web session into this terminal: opens a picker, then fetches the branch and conversation. Also available as /tp. Requires a claude.ai subscription
 
@@ -1308,9 +1494,9 @@ Pull a Claude Code on the web session into this terminal: opens a picker, then f
 
 ## /terminal-setup
 
-> Configure terminal keybindings for
+> Configure terminal keybindings
 
-### Description
+### Purpose
 
 Configure terminal keybindings for Shift+Enter and other shortcuts. Only visible in terminals that need it, like VS Code, Cursor, Windsurf, Alacritty, or Zed
 
@@ -1324,7 +1510,7 @@ Configure terminal keybindings for Shift+Enter and other shortcuts. Only visible
 
 > Change the color theme
 
-### Description
+### Purpose
 
 Change the color theme. Includes an auto option that matches your terminal's light or dark background, light and dark variants, colorblind-accessible (daltonized) themes, ANSI themes that use your terminal's color palette, and any custom themes from ~/.claude/themes/ or plugins. Select New custom theme… to create one
 
@@ -1336,9 +1522,9 @@ Change the color theme. Includes an auto option that matches your terminal's lig
 
 ## /tui
 
-> Set the terminal UI renderer and
+> Set terminal UI renderer
 
-### Description
+### Purpose
 
 Set the terminal UI renderer and relaunch into it with your conversation intact. fullscreen enables the flicker-free alt-screen renderer. With no argument, prints the active renderer
 
@@ -1350,9 +1536,9 @@ Set the terminal UI renderer and relaunch into it with your conversation intact.
 
 ## /ultraplan
 
-> Draft a plan in an ultraplan session,
+> Draft plan in cloud ultraplan session
 
-### Description
+### Purpose
 
 Draft a plan in an ultraplan session, review it in your browser, then execute remotely or send it back to your terminal
 
@@ -1364,9 +1550,9 @@ Draft a plan in an ultraplan session, review it in your browser, then execute re
 
 ## /ultrareview
 
-> Run a deep, multi-agent code review in
+> Run deep multi-agent code review in cloud
 
-### Description
+### Purpose
 
 Run a deep, multi-agent code review in a cloud sandbox with ultrareview. Includes 3 free runs on Pro and Max, then requires usage credits
 
@@ -1378,9 +1564,9 @@ Run a deep, multi-agent code review in a cloud sandbox with ultrareview. Include
 
 ## /upgrade
 
-> Open the upgrade page to switch to a
+> Open upgrade page for higher plan tier
 
-### Description
+### Purpose
 
 Open the upgrade page to switch to a higher plan tier
 
@@ -1392,9 +1578,9 @@ Open the upgrade page to switch to a higher plan tier
 
 ## /usage-credits
 
-> Configure usage credits to keep working
+> Configure usage credits for limits
 
-### Description
+### Purpose
 
 Configure usage credits to keep working when you hit a limit. Previously /extra-usage
 
@@ -1406,9 +1592,9 @@ Configure usage credits to keep working when you hit a limit. Previously /extra-
 
 ## /verify
 
-> Confirm a code change does what it
+> Confirm code change by running app
 
-### Description
+### Purpose
 
 Confirm a code change does what it should by building your project's app, running it, and observing the result, rather than relying on tests or type checks. See Run and verify your app. Requires Claude Code v2.1.145 or later
 
@@ -1422,7 +1608,7 @@ Confirm a code change does what it should by building your project's app, runnin
 
 > Removed in v2
 
-### Description
+### Purpose
 
 Removed in v2.1.92. To toggle between Vim and Normal editing modes, use /config → Editor mode
 
@@ -1434,9 +1620,9 @@ Removed in v2.1.92. To toggle between Vim and Normal editing modes, use /config 
 
 ## /voice
 
-> Toggle voice dictation, or enable it in
+> Toggle voice dictation mode
 
-### Description
+### Purpose
 
 Toggle voice dictation, or enable it in a specific mode. Requires a Claude.ai account
 
@@ -1448,9 +1634,9 @@ Toggle voice dictation, or enable it in a specific mode. Requires a Claude.ai ac
 
 ## /web-setup
 
-> Connect your GitHub account to Claude
+> Connect GitHub account to Claude Code web
 
-### Description
+### Purpose
 
 Connect your GitHub account to Claude Code on the web using your local gh CLI credentials. /schedule prompts for this automatically if GitHub isn't connected
 
@@ -1470,33 +1656,27 @@ Connect your GitHub account to Claude Code on the web using your local gh CLI cr
 
 Kill all running background subagents in this session. Press twice within 3 seconds to confirm
 
+### Context
+
+Subagent control
+
 ### Usage
 
 ~~~text
 Ctrl + X Ctrl + K
 ~~~
 
-## Ctrl + D
-
-> Exit Claude Code session
-
-### Description
-
-Exit Claude Code session
-
-### Usage
-
-~~~text
-Ctrl + D
-~~~
-
 ## Ctrl + G
 
-> Open in default text editor
+> Open prompt in default text editor
 
 ### Description
 
 Open in default text editor
+
+### Context
+
+Edit your prompt or custom response in your default text editor. Ctrl+X Ctrl+E is the readline-native binding. Turn on Show last response in external editor in /config to prepend Claude's previous reply as #-commented context above your prompt; the comment block is stripped when you save
 
 ### Usage
 
@@ -1512,6 +1692,10 @@ Ctrl + G
 
 Background running tasks
 
+### Context
+
+Backgrounds bash commands and agents. Tmux users press twice
+
 ### Usage
 
 ~~~text
@@ -1520,11 +1704,15 @@ Ctrl + B
 
 ## Ctrl + T
 
-> Toggle task list
+> Toggle task list visibility
 
 ### Description
 
 Toggle task list
+
+### Context
+
+Show or hide the task list in the terminal status area
 
 ### Usage
 
@@ -1540,6 +1728,10 @@ Ctrl + T
 
 Cycle through dialog tabs
 
+### Context
+
+Navigate between tabs in permission dialogs and menus
+
 ### Usage
 
 ~~~text
@@ -1548,11 +1740,15 @@ Left/Right arrows
 
 ## Up/Down arrows
 
-> Move cursor or navigate command history
+> Move cursor or navigate history
 
 ### Description
 
 Move cursor or navigate command history
+
+### Context
+
+In multiline input, first moves the cursor within the prompt. Once the cursor is already on the top or bottom edge, pressing again navigates command history
 
 ### Usage
 
@@ -1562,11 +1758,15 @@ Up/Down arrows
 
 ## Option + T
 
-> Toggle extended thinking
+> Toggle extended thinking mode
 
 ### Description
 
 Toggle extended thinking
+
+### Context
+
+Enable or disable extended thinking mode. As of v2.1.132 this shortcut works on macOS without configuring Option as Meta
 
 ### Usage
 
@@ -1576,72 +1776,20 @@ Option + T
 
 ## Option + O
 
-> Toggle fast mode
+> Toggle fast mode — Enable or disable fast mode
 
 ### Description
 
 Toggle fast mode
 
+### Context
+
+Enable or disable fast mode
+
 ### Usage
 
 ~~~text
 Option + O
-~~~
-
-## Ctrl + A
-
-> Move cursor to start of current line
-
-### Description
-
-Move cursor to start of current line
-
-### Usage
-
-~~~text
-Ctrl + A
-~~~
-
-## Ctrl + E
-
-> Move cursor to end of current line
-
-### Description
-
-Move cursor to end of current line
-
-### Usage
-
-~~~text
-Ctrl + E
-~~~
-
-## Ctrl + K
-
-> Delete to end of line
-
-### Description
-
-Delete to end of line
-
-### Usage
-
-~~~text
-Ctrl + K
-~~~
-
-## Ctrl + U
-
-> Delete from cursor to line start
-
-### Description
-
-Delete from cursor to line start
-
-### Usage
-
-~~~text
-Ctrl + U
 ~~~
 
 ## Ctrl + W
@@ -1652,6 +1800,10 @@ Ctrl + U
 
 Delete previous word
 
+### Context
+
+Stores deleted text for pasting. On Windows, Ctrl+Backspace also deletes the previous word
+
 ### Usage
 
 ~~~text
@@ -1660,11 +1812,15 @@ Ctrl + W
 
 ## Ctrl + Y
 
-> Paste deleted text
+> Paste previously deleted text
 
 ### Description
 
 Paste deleted text
+
+### Context
+
+Paste text deleted with Ctrl+K, Ctrl+U, or Ctrl+W
 
 ### Usage
 
@@ -1674,11 +1830,15 @@ Ctrl + Y
 
 ## Alt + Y
 
-> Cycle paste history
+> Cycle through paste history
 
 ### Description
 
 Cycle paste history
+
+### Context
+
+After pasting, cycle through previously deleted text. Requires Option as Meta on macOS
 
 ### Usage
 
@@ -1688,11 +1848,15 @@ Alt + Y
 
 ## Alt + B
 
-> Move cursor back one word
+> Move cursor back one word — Word navigation
 
 ### Description
 
 Move cursor back one word
+
+### Context
+
+Word navigation. Requires Option as Meta on macOS
 
 ### Usage
 
@@ -1702,11 +1866,15 @@ Alt + B
 
 ## Alt + F
 
-> Move cursor forward one word
+> Move cursor forward one word — Word navigation
 
 ### Description
 
 Move cursor forward one word
+
+### Context
+
+Word navigation. Requires Option as Meta on macOS
 
 ### Usage
 
@@ -1720,26 +1888,20 @@ Alt + F
 
 ### Description
 
-Quick escape — Works in all terminals
+Multiline input
+
+### Method
+
+Quick escape
+
+### Context
+
+Works in all terminals
 
 ### Usage
 
 ~~~text
 \ + Enter
-~~~
-
-## Option + Enter
-
-> Option key — After enabling Option as
-
-### Description
-
-Option key — After enabling Option as Meta on macOS
-
-### Usage
-
-~~~text
-Option + Enter
 ~~~
 
 ## Paste directly
@@ -1748,7 +1910,15 @@ Option + Enter
 
 ### Description
 
-Paste mode — For code blocks, logs
+Multiline input
+
+### Method
+
+Paste mode
+
+### Context
+
+For code blocks, logs
 
 ### Usage
 
@@ -1756,27 +1926,17 @@ Paste mode — For code blocks, logs
 Paste directly
 ~~~
 
-## / at start
-
-> Command or skill
-
-### Description
-
-Command or skill
-
-### Usage
-
-~~~text
-/ at start
-~~~
-
 ## ! at start
 
-> Shell mode
+> Run shell command directly
 
 ### Description
 
 Shell mode
+
+### Notes
+
+Run commands directly and add execution output to the session
 
 ### Usage
 
@@ -1800,7 +1960,7 @@ Toggle the keyboard shortcut help panel. Requires fullscreen rendering
 
 ## { / }
 
-> Jump to the previous or next user
+> Jump between user prompts
 
 ### Description
 
@@ -1814,7 +1974,7 @@ Jump to the previous or next user prompt, like vim paragraph motion. Requires fu
 
 ## [
 
-> Write the full conversation to your
+> Write conversation to terminal scrollback
 
 ### Description
 
@@ -1828,7 +1988,7 @@ Write the full conversation to your terminal's native scrollback so Cmd+F, tmux 
 
 ## v
 
-> Write the conversation to a temporary
+> Open conversation in editor
 
 ### Description
 
@@ -1856,11 +2016,15 @@ q
 
 ## Hold
 
-> Voice dictation
+> Hold to record voice dictation
 
 ### Description
 
 Voice dictation
+
+### Notes
+
+Requires voice dictation to be enabled. Hold to record, or run /voice tap for tap-to-toggle. Rebindable
 
 ### Usage
 
