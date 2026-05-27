@@ -18,7 +18,7 @@ export function detectProvider(baseUrl: string | null): Provider {
   if (u.includes("google") || u.includes("gemini") || u.includes("googleapis")) return "Gemini";
   if (u.includes("moonshot") || u.includes("kimi")) return "Kimi";
   if (u.includes("aliyun") || u.includes("dashscope") || u.includes("qwen")) return "Qwen";
-  if (u.includes("anthropic")) return "Claude";
+  if (u.includes("anthropic.com")) return "Claude";
   return "Other";
 }
 

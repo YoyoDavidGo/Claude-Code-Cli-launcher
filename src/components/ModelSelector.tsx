@@ -6,7 +6,7 @@ import { MODEL_PRESETS, PROVIDERS } from "../utils/modelPresets";
 import type { Provider } from "../types/config";
 
 export function ModelSelector() {
-  const { language, theme, provider, presetModel, customModel, gatewayModels, settingsModels, currentProjectPath, syncClaudeSettings, setProvider, setPresetModel, setCustomModel } = useAppStore();
+  const { language, theme, provider, providerLabel, presetModel, customModel, gatewayModels, settingsModels, currentProjectPath, syncClaudeSettings, setProvider, setPresetModel, setCustomModel } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
 
   async function handleRefresh() {
@@ -58,7 +58,7 @@ export function ModelSelector() {
       <div className={rowCls}>
         <label className={labelCls}>{t(language, "provider")}</label>
         <select value={provider} onChange={(e) => handleProviderChange(e.target.value)} className={selectCls}>
-          {PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
+          {PROVIDERS.map((p) => <option key={p} value={p}>{p === "Other" ? providerLabel : p}</option>)}
         </select>
       </div>
 

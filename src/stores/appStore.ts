@@ -116,6 +116,7 @@ interface AppState {
   configLoaded: boolean;
   gatewayModels: string[];
   settingsModels: string[];
+  providerLabel: string;
 
   // Actions
   loadConfig: () => Promise<void>;
@@ -168,6 +169,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   configLoaded: false,
   gatewayModels: [],
   settingsModels: [],
+  providerLabel: DEFAULT_CONFIG.defaultProvider,
 
   loadConfig: async () => {
     try {
@@ -251,10 +253,20 @@ export const useAppStore = create<AppState>((set, get) => ({
         invoke("save_config", { config }).catch(console.error);
       }
 
+      let providerLabel: string = provider;
+      if (provider === "Other" && info.base_url) {
+        try {
+          const host = new URL(info.base_url).hostname;
+          const parts = host.split(".");
+          providerLabel = parts.length >= 2 ? parts[parts.length - 2] : host;
+        } catch { /* keep "Other" */ }
+      }
+
       set({
         gatewayModels: info.gateway_models,
         settingsModels: info.source === "none" ? [] : info.all_models,
         provider,
+        providerLabel,
         presetModel,
         customModel,
         config,
@@ -308,7 +320,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ launchMode, config });
     if (s.currentProjectPath) invoke("save_config", { config }).catch(console.error);
   },
-  setProvider: (provider) => set({ provider }), // session-only; never persisted (always re-detected)
+  setProvider: (provider) => set({ provider, providerLabel: provider }), // session-only; never persisted (always re-detected)
   setPresetModel: (presetModel) => {
     const s = get();
     const config = s.currentProjectPath

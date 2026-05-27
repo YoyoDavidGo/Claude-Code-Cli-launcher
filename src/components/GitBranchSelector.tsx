@@ -86,16 +86,21 @@ export function GitBranchSelector() {
     }
   }, [startType]);
 
+  function parseSubdirValue(value: string): { subdir: string; branch: string } | null {
+    const slashIdx = value.indexOf("/");
+    if (slashIdx === -1) return null;
+    return { subdir: value.substring(0, slashIdx), branch: value.substring(slashIdx + 1) };
+  }
+
   async function handleSwitch(value: string) {
     if (!currentProjectPath || !value) return;
 
     if (isParentRepo) {
       if (value === currentGitBranch) return;
     } else {
-      const slashIdx = value.indexOf("/");
-      if (slashIdx === -1) return;
-      const subdir = value.substring(0, slashIdx);
-      const branch = value.substring(slashIdx + 1);
+      const parsed = parseSubdirValue(value);
+      if (!parsed) return;
+      const { subdir, branch } = parsed;
       const info = subdirBranches.find((s) => s.subdir === subdir);
       if (!info) return;
       if (branch === info.current) {
@@ -125,10 +130,9 @@ export function GitBranchSelector() {
         setTimeout(() => setSwitchMsg(""), 3000);
       }
     } else {
-      const slashIdx = value.indexOf("/");
-      if (slashIdx === -1) return;
-      const subdir = value.substring(0, slashIdx);
-      const branch = value.substring(slashIdx + 1);
+      const parsed = parseSubdirValue(value);
+      if (!parsed) return;
+      const { subdir, branch } = parsed;
       const subdirPath = `${currentProjectPath}/${subdir}`;
       setSwitchMsg("...");
       try {
