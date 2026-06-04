@@ -102,4 +102,7 @@ export const enUS = {
 
   gitSwitchConfirmTitle: "Confirm Branch Switch",
   gitSwitchConfirmMessage: "Switch from {current} to {target}, confirm?",
+
+  trayShow: "Show App",
+  trayQuit: "Quit",
 };

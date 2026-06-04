@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
+import { t } from "../i18n";
 import type {
   AppConfig,
   AppLanguage,
@@ -199,6 +200,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       });
       applyTheme(config.defaultTheme as AppTheme);
       localStorage.setItem("theme-preference", config.defaultTheme as AppTheme);
+      const lang = config.defaultLanguage as AppLanguage;
+      invoke("update_tray_menu", { showLabel: t(lang, "trayShow"), quitLabel: t(lang, "trayQuit") }).catch(() => {});
       get().syncClaudeSettings(restoredPath); // resolves provider + model from memory
     } catch {
       set({ configLoaded: true });
@@ -227,24 +230,21 @@ export const useAppStore = create<AppState>((set, get) => ({
 
       let provider: Provider;
       let presets: string[];
-      let detectedDefault: string;
       if (info.source === "none") {
         provider = "Claude";
         presets = MODEL_PRESETS["Claude"] ?? [];
-        detectedDefault = presets[0] ?? "";
       } else {
         provider = detectProvider(info.base_url);
-        const model = info.model ?? "";
         presets = info.all_models.length > 0
           ? info.all_models
           : provider === "Other"
             ? info.gateway_models
             : (MODEL_PRESETS[provider] ?? []);
-        detectedDefault = presets.includes(model) ? model : (presets[0] ?? "");
       }
 
       const memPreset = mem?.presetModel;
-      const presetModel = memPreset && presets.includes(memPreset) ? memPreset : detectedDefault;
+      // Use remembered model only if it's still in the current list; otherwise no model.
+      const presetModel = memPreset !== undefined && presets.includes(memPreset) ? memPreset : "";
       const customModel = mem?.customModel ?? "";
 
       let config = s.config;
@@ -347,6 +347,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   setLanguage: (language) => {
     set({ language });
+    invoke("update_tray_menu", { showLabel: t(language, "trayShow"), quitLabel: t(language, "trayQuit") }).catch(() => {});
     get().saveConfig();
   },
   setTheme: (theme) => {

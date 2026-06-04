@@ -216,14 +216,6 @@ fn home_dir() -> Option<std::path::PathBuf> {
     { std::env::var("HOME").ok().map(std::path::PathBuf::from) }
 }
 
-fn strip_model_suffix(name: &str) -> String {
-    if let Some(idx) = name.find('[') {
-        name[..idx].trim_end().to_string()
-    } else {
-        name.to_string()
-    }
-}
-
 // Simple text-based extraction: find "KEY": "VALUE" in file content without JSON parsing
 fn extract_env_str(text: &str, key: &str) -> Option<String> {
     let needle = format!("\"{}\"", key);
@@ -267,16 +259,25 @@ pub fn read_claude_settings(project_path: String) -> ClaudeSettingsInfo {
         let Ok(text) = std::fs::read_to_string(path) else { continue };
 
         let base_url = extract_env_str(&text, "ANTHROPIC_BASE_URL");
-        let model = extract_env_str(&text, "ANTHROPIC_MODEL").map(|s| strip_model_suffix(&s));
+        let model = extract_env_str(&text, "ANTHROPIC_MODEL");
         if base_url.is_none() && model.is_none() { continue; }
 
-        let default_sonnet = extract_env_str(&text, "ANTHROPIC_DEFAULT_SONNET_MODEL").map(|s| strip_model_suffix(&s));
-        let default_opus  = extract_env_str(&text, "ANTHROPIC_DEFAULT_OPUS_MODEL").map(|s| strip_model_suffix(&s));
-        let default_haiku = extract_env_str(&text, "ANTHROPIC_DEFAULT_HAIKU_MODEL").map(|s| strip_model_suffix(&s));
-        let reasoning     = extract_env_str(&text, "ANTHROPIC_REASONING_MODEL").map(|s| strip_model_suffix(&s));
+        let default_sonnet      = extract_env_str(&text, "ANTHROPIC_DEFAULT_SONNET_MODEL");
+        let default_sonnet_name = extract_env_str(&text, "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME");
+        let default_opus        = extract_env_str(&text, "ANTHROPIC_DEFAULT_OPUS_MODEL");
+        let default_opus_name   = extract_env_str(&text, "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME");
+        let default_haiku       = extract_env_str(&text, "ANTHROPIC_DEFAULT_HAIKU_MODEL");
+        let default_haiku_name  = extract_env_str(&text, "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME");
+        let reasoning           = extract_env_str(&text, "ANTHROPIC_REASONING_MODEL");
 
         let mut all_models: Vec<String> = vec![];
-        for m in [&model, &default_sonnet, &default_opus, &default_haiku, &reasoning].into_iter().flatten() {
+        for m in [
+            &model,
+            &default_sonnet, &default_sonnet_name,
+            &default_opus,   &default_opus_name,
+            &default_haiku,  &default_haiku_name,
+            &reasoning,
+        ].into_iter().flatten() {
             if !all_models.contains(m) { all_models.push(m.clone()); }
         }
 
@@ -619,6 +620,21 @@ pub fn restore_cheatsheet_default(app: tauri::AppHandle, lang: String) -> Result
     Ok(content.to_string())
 }
 
+#[tauri::command]
+pub fn update_tray_menu(app: tauri::AppHandle, show_label: String, quit_label: String) -> Result<(), String> {
+    use tauri::menu::{Menu, MenuItem};
+    let show = MenuItem::with_id(&app, "show", show_label.as_str(), true, None::<&str>)
+        .map_err(|e| e.to_string())?;
+    let quit = MenuItem::with_id(&app, "quit", quit_label.as_str(), true, None::<&str>)
+        .map_err(|e| e.to_string())?;
+    let menu = Menu::with_items(&app, &[&show, &quit])
+        .map_err(|e| e.to_string())?;
+    if let Some(tray) = app.tray_by_id("main-tray") {
+        tray.set_menu(Some(menu)).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -654,11 +670,6 @@ mod tests {
     }
 
     #[test]
-    fn strips_suffix() {
-        assert_eq!(strip_model_suffix("DeepSeek-V4-pro[1M]"), "DeepSeek-V4-pro");
-    }
-
-    #[test]
     fn read_settings_from_project_dir() {
         let dir = std::env::temp_dir().join(format!("ccl_test_{}", std::process::id()));
         let claude = dir.join(".claude");
@@ -670,9 +681,9 @@ mod tests {
 
         assert_eq!(info.source, "project");
         assert_eq!(info.base_url.as_deref(), Some("https://api.deepseek.com/anthropic"));
-        assert_eq!(info.model.as_deref(), Some("DeepSeek-V4-pro"));
-        assert!(info.all_models.contains(&"DeepSeek-V4-pro".to_string()));
-        assert!(info.all_models.contains(&"DeepSeek-V4-flash".to_string()));
+        assert_eq!(info.model.as_deref(), Some("DeepSeek-V4-pro[1M]"));
+        assert!(info.all_models.contains(&"DeepSeek-V4-pro[1M]".to_string()));
+        assert!(info.all_models.contains(&"DeepSeek-V4-flash[1M]".to_string()));
     }
 
     // Real-world scenario: project has its own settings.json WITHOUT provider config,
@@ -706,6 +717,6 @@ mod tests {
 
         assert_eq!(info.source, "global", "should fall through project file to global");
         assert_eq!(info.base_url.as_deref(), Some("https://api.deepseek.com/anthropic"));
-        assert_eq!(info.model.as_deref(), Some("DeepSeek-V4-pro"));
+        assert_eq!(info.model.as_deref(), Some("DeepSeek-V4-pro[1M]"));
     }
 }

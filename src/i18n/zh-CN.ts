@@ -102,6 +102,9 @@ export const zhCN = {
 
   gitSwitchConfirmTitle: "确认切换分支",
   gitSwitchConfirmMessage: "当前项目由 {current} 切换到 {target}，确认切换？",
+
+  trayShow: "显示应用",
+  trayQuit: "退出",
 };
 
 export type I18nKeys = keyof typeof zhCN;
