@@ -67,13 +67,14 @@
 |---|---|---|
 | 📁 | 项目列表，支持收藏与备注别名 | 每次手动找文件夹 |
 | 🖥 | **仅启动终端** — 在项目目录打开 Shell | 右键→在终端中打开 |
-| 🌿 | Git 分支选择器 | 启动前手动 `git checkout` |
+| 🌿 | Git 分支选择器（切换前二次确认） | 启动前手动 `git checkout` |
 | 💬 | 新会话 · Continue · Resume 三种模式 | 记忆 `--continue` / `--resume` 参数 |
 | 🤖 | Agent View 模式（`claude agents`） | 手动输入 agents 子命令 |
 | 🔓 | 绕过权限一键开关 | 输入 `--permission-mode bypassPermissions` |
 | 🧠 | 自动从 `.claude/settings.json` 检测模型 | 每次手动指定 `--model` |
 | 👁 | 实时命令预览 + 一键复制 | 猜测当前生效了哪些参数 |
 | 📋 | 内置 Claude Code 速查表 | 上网搜索 CLI 参数用法 |
+| 🛎 | 系统托盘常驻，关闭即隐藏、单例运行 | 反复开关、误开多个窗口 |
 | 🎨 | 亮色 / 暗色主题，中文 / English 界面 | — |
 
 ---

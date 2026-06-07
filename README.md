@@ -67,13 +67,14 @@ If you're an experienced user, think of it as a project manager for your Claude 
 |---|---|---|
 | 📁 | Project list with favorites & aliases | Navigating to folders manually every time |
 | 🖥 | **Open Terminal** — open a shell at the project folder | Right-click → Open in Terminal |
-| 🌿 | Git branch selector | `git checkout` before launching |
+| 🌿 | Git branch selector (with switch confirmation) | `git checkout` before launching |
 | 💬 | New · Continue · Resume session modes | Memorizing `--continue` / `--resume` flags |
 | 🤖 | Agent View mode (`claude agents`) | Typing the agents subcommand |
 | 🔓 | Bypass permissions toggle | Typing `--permission-mode bypassPermissions` |
 | 🧠 | Auto-detects model from `.claude/settings.json` | Manually specifying `--model` every time |
 | 👁 | Live command preview + copy | Guessing what flags were applied |
 | 📋 | Built-in Claude Code cheatsheet | Searching the web for CLI flags |
+| 🛎 | System tray, close-to-hide, single instance | Repeated relaunching, multiple stray windows |
 | 🎨 | Light / Dark theme, zh-CN / English UI | — |
 
 ---
