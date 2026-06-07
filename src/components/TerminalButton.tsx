@@ -32,8 +32,12 @@ export function TerminalButton() {
   }
 
   return (
-    <div className="flex flex-col items-start gap-1">
-      {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
+    <>
+      {errorMsg && (
+        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[45%] text-center text-xs text-red-500">
+          {errorMsg}
+        </p>
+      )}
       <button
         onClick={handleOpen}
         className="inline-flex items-center gap-2.5 rounded-xl bg-brand-600 px-8 py-2.5 text-sm font-bold text-white shadow-md shadow-brand-950/20 hover:bg-brand-500 active:bg-brand-700 transition-colors"
@@ -41,6 +45,6 @@ export function TerminalButton() {
         <Terminal size={15} strokeWidth={2.5} />
         {t(language, "openTerminal")}
       </button>
-    </div>
+    </>
   );
 }

@@ -38,7 +38,7 @@ export default function App() {
             <ModelSelector />
           </div>
           <CommandPreview />
-          <div className="flex justify-between mt-1">
+          <div className="relative flex justify-between items-center mt-1">
             {startType === "normal" ? <TerminalButton /> : <div />}
             <LaunchButton />
           </div>

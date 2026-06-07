@@ -59,17 +59,19 @@ export function LaunchButton() {
           </div>
         </div>
       )}
-      <div className="flex flex-col items-end gap-1">
-        {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
-        <button
-          onClick={handleLaunch}
-          disabled={launching}
-          className="inline-flex items-center gap-2.5 rounded-xl bg-brand-600 px-8 py-2.5 text-sm font-bold text-white shadow-md shadow-brand-950/20 hover:bg-brand-500 active:bg-brand-700 transition-colors disabled:opacity-60"
-        >
-          <Play size={15} fill="white" />
-          {launching ? t(language, "launching") : startType === "agentView" ? t(language, "launchButtonAgentView") : t(language, "launchButton")}
-        </button>
-      </div>
+      {errorMsg && (
+        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[45%] text-center text-xs text-red-500">
+          {errorMsg}
+        </p>
+      )}
+      <button
+        onClick={handleLaunch}
+        disabled={launching}
+        className="inline-flex items-center gap-2.5 rounded-xl bg-brand-600 px-8 py-2.5 text-sm font-bold text-white shadow-md shadow-brand-950/20 hover:bg-brand-500 active:bg-brand-700 transition-colors disabled:opacity-60"
+      >
+        <Play size={15} fill="white" />
+        {launching ? t(language, "launching") : startType === "agentView" ? t(language, "launchButtonAgentView") : t(language, "launchButton")}
+      </button>
     </>
   );
 }
