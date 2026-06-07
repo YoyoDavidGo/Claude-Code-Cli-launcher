@@ -33,6 +33,7 @@ export interface ProjectMemory {
   bypass?: boolean;          // legacy — migrated to permissionMode on load
   permissionMode?: PermissionMode;
   branch?: string;
+  detectedBaseUrl?: string;  // last detected base_url; baseline for "config changed" → clears customModel
 }
 
 export interface AppConfig {

@@ -245,11 +245,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       const memPreset = mem?.presetModel;
       // Use remembered model only if it's still in the current list; otherwise no model.
       const presetModel = memPreset !== undefined && presets.includes(memPreset) ? memPreset : "";
-      const customModel = mem?.customModel ?? "";
+      // Clear customModel when the json config (base_url) changed since it was entered.
+      const curBaseUrl = info.source === "none" ? "" : (info.base_url ?? "");
+      const memBaseUrl = mem?.detectedBaseUrl;
+      const configChanged = memBaseUrl !== undefined && memBaseUrl !== curBaseUrl;
+      const customModel = configChanged ? "" : (mem?.customModel ?? "");
 
       let config = s.config;
-      if (path && !mem) {
-        config = patchMemory(config, s.startType, path, { presetModel, customModel });
+      if (path) {
+        config = patchMemory(config, s.startType, path, { presetModel, customModel, detectedBaseUrl: curBaseUrl });
         invoke("save_config", { config }).catch(console.error);
       }
 
